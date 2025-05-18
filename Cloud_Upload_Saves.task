@@ -1,0 +1,5 @@
+[Task]
+Name=Cloud Upload Saves
+Exec= /mnt/mmc/MUOS/tasks/cloud_upload_saves.sh
+Icon=cloud_upload_icon.png
+Description=Upload save files, screenshots, and videos to Cloud Drive
