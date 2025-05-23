@@ -7,6 +7,7 @@
 #!/bin/sh
 echo "$0 $*"
 
+## TODO: fix how to display the info panel in muOS
 # Display an info panel
 #LD_PRELOAD=/run/muos/storage/lib/libpadsp.so /run/muos/storage/bin/infoPanel -t "Downloading Saves" -m "Your saves are being downloaded from Dropbox!" --auto &
 

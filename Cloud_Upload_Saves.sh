@@ -6,7 +6,8 @@
 
 echo "$0 $*"
 
-# Display an info panel
+## TODO: fix how to display the info panel in muOS
+# Display an info panel 
 #LD_PRELOAD=/mnt/mmc/MUOS/lib/libpadsp.so /mnt/mmc/MUOS/bin/infoPanel -t "Uploading Saves" -m "Your saves are being uploaded to Cloud Drive!" --auto &
 
 # Synchronize saves

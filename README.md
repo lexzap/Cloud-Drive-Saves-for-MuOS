@@ -40,6 +40,8 @@ When installed, this project adds **two new tasks** to your muOS Pixie device's 
 1. **📤 Cloud Upload Saves** - Uploads your save files and screenshots to cloud storage
 2. **📥 Cloud Download Saves** - Downloads your save files and screenshots from cloud storage
 
+> **🎨 Icon Note:** The included PNG files (`Cloud_Upload_Saves.png` and `Cloud_Download_Saves.png`) are provided for users who wish to embed custom icons into their Theme installation files. This feature has not been implemented yet and the PNGs are optional.
+
 ### 📁 Directories Synchronized
 
 - `/run/muos/storage/save/` - All game save files
