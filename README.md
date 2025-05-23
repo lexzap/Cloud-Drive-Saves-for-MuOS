@@ -1,6 +1,6 @@
 # 📥 muOS Cloud Sync for Retro Handheld Devices
 
-*Automated cloud backup solution for save files and screenshots on muOS Pixie*
+*A cloud drive backup solution for save files and screenshots on muOS Pixie Retro Handheld Enulator Consoles*
 
 ---
 
