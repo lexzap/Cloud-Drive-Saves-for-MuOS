@@ -16,6 +16,14 @@ This project provides a complete cloud synchronization solution for **muOS retro
 - 🎯 **Easy Integration**: Adds new tasks directly to muOS Task menu
 - ⚡ **One-Click Operation**: Simple task execution from device menu
 
+## 🙏 Acknowledgments
+
+This project is adapted from the excellent work by **hotcereal** for the Miyoo Mini Plus:
+
+🌟 **Original Project:** [cloud-saves-miyoo-mini-plus](https://github.com/hotcereal/cloud-saves-miyoo-mini-plus)
+
+*Special thanks to hotcereal for creating the foundation that made this muOS adaptation possible!*
+
 ## 🌐 Cloud Service Compatibility
 
 - ✅ **Dropbox** - Fully tested and working
