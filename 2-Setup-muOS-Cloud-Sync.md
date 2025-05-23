@@ -83,6 +83,8 @@ chmod +x tasks/Cloud_Download_Saves.sh
 
 > **🌐 Internet Connection:** Ensure your device is connected to the internet if your cloud service requires it
 
+> **⏰ Time Sync Critical:** Enable internet time synchronization in muOS settings to ensure proper timestamps on save files. Incorrect timestamps can cause sync conflicts and file versioning issues
+
 > **🔗 Compatibility:** The tasks utilize symlinked paths (`/mnt/mmc/MUOS/`) for compatibility across different storage setups
 
 > **⚙️ Customization:** Customize the scripts as needed to match your specific directory structures or cloud service configurations
