@@ -117,3 +117,4 @@ ${RCLONE_BINARY} copy -P -L --no-check-certificate "${CLOUD_REMOTE_NAME}:${CLOUD
 echo ""
 echo "✅ Download completed successfully!"
 
+
