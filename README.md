@@ -40,7 +40,12 @@ When installed, this project adds **two new tasks** to your muOS Pixie device's 
 1. **📤 Cloud Upload Saves** - Uploads your save files and screenshots to cloud storage
 2. **📥 Cloud Download Saves** - Downloads your save files and screenshots from cloud storage
 
-> **🎨 Icon Note:** The included PNG files (`Cloud_Upload_Saves.png` and `Cloud_Download_Saves.png`) are provided for users who wish to embed custom icons into their Theme installation files. This feature has not been implemented yet and the PNGs are optional.
+> **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. The setup guide will automatically install these icons when you run the tasks for the first time.
+
+> **📁 Repository Structure:** This repository is organized with separate directories:
+> - `copy_to_tasks_directory/` - Contains shell scripts and task files for muOS
+> - `copy_to_tools_directory/` - Contains PNG icons, where you'll also place your rclone binary and config
+> - Sample configuration files for different cloud services are included for reference
 
 ### 📁 Directories Synchronized
 

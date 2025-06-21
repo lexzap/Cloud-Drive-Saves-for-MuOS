@@ -1,5 +1,5 @@
 [Task]
 Name=Cloud Download Saves
 Exec= /mnt/mmc/MUOS/tasks/cloud_download_saves.sh
-Icon=cloud_download_icon.png
+Icon=Cloud_Download_Saves.png
 Description=Download save files, screenshots, and videos from Cloud Drive
