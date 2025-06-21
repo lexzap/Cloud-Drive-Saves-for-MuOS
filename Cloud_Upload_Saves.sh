@@ -18,6 +18,13 @@ MUOS_USER_DATA="/run/muos/storage"
 RCLONE_BINARY="${MUOS_ROOT}/tools/rclone"
 RCLONE_CONFIG="${MUOS_ROOT}/tools/rclone.conf"
 
+# Task icon paths
+TASK_ICONS="${MUOS_ROOT}/theme/active/glyph/muxtask"
+UPLOAD_ICON_SOURCE="${MUOS_ROOT}/tools/Cloud_Upload_Saves.png"
+DOWNLOAD_ICON_SOURCE="${MUOS_ROOT}/tools/Cloud_Download_Saves.png"
+UPLOAD_ICON_TARGET="${TASK_ICONS}/Cloud_Upload_Saves.png"
+DOWNLOAD_ICON_TARGET="${TASK_ICONS}/Cloud_Download_Saves.png"
+
 # Source directories (what we're uploading)
 SAVE_DIR="${MUOS_USER_DATA}/save"
 SCREENSHOT_DIR="${MUOS_USER_DATA}/screenshot"
@@ -32,6 +39,23 @@ CLOUD_SCREENSHOT_PATH="/ambernic/screenshot"
 ##################################################################################
 
 echo "=== muOS Cloud Upload: Pre-flight Checks ==="
+echo ""
+
+# Install task icons if they don't exist
+echo "🎨 Checking task icons..."
+if [ -d "${TASK_ICONS}" ]; then
+    if [ -f "${UPLOAD_ICON_SOURCE}" ] && [ ! -f "${UPLOAD_ICON_TARGET}" ]; then
+        echo "   Installing upload task icon..."
+        cp "${UPLOAD_ICON_SOURCE}" "${UPLOAD_ICON_TARGET}"
+    fi
+    if [ -f "${DOWNLOAD_ICON_SOURCE}" ] && [ ! -f "${DOWNLOAD_ICON_TARGET}" ]; then
+        echo "   Installing download task icon..."
+        cp "${DOWNLOAD_ICON_SOURCE}" "${DOWNLOAD_ICON_TARGET}"
+    fi
+    echo "   Task icons ready"
+else
+    echo "   ⚠️  Task icon directory not found (theme may not support custom icons)"
+fi
 echo ""
 
 # Check for rclone binary
