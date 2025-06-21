@@ -35,7 +35,10 @@ This guide will help you set up cloud synchronization on your muOS Pixie device 
 
 ## 📂 Step 3: Transfer Files to the SD Card
 
-1. Open the SD card on your computer. It should have a directory named `MUOS` typically at `/mnt/mmc/MUOS/`
+1. Open the main OS SD card on your computer. It should have a directory named `MUOS` , on your device this typically at `/mnt/mmc/MUOS/`  
+
+## 📝 Important Note for qty=2 SD card users OS and a ROMs SD card: 
+the files being copied should go into SD slot #1 that has the MUOS operating system.
 
 2. Navigate to the following directories and copy the respective files:
 
@@ -43,7 +46,7 @@ This guide will help you set up cloud synchronization on your muOS Pixie device 
 
 | Source (from this repository) | Destination on SD Card |
 |-------------------------------|------------------------|
-| `rclone` binary (downloaded separately) | `MUOS/tools/rclone` |
+| `rclone` armv7 32-bit linux binary (downloaded separately) | `MUOS/tools/rclone` |
 | `rclone.conf` file (from your PC setup) | `MUOS/tools/rclone.conf` |
 | `copy_to_tools_directory/Cloud_Upload_Saves.png` | `MUOS/tools/Cloud_Upload_Saves.png` |
 | `copy_to_tools_directory/Cloud_Download_Saves.png` | `MUOS/tools/Cloud_Download_Saves.png` |
