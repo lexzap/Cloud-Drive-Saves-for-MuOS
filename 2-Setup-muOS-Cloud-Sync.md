@@ -40,8 +40,11 @@ This guide will help you set up cloud synchronization on your muOS Pixie device 
 ### 📝 Important Note for qty=2 SD card users OS and a ROMs SD card: 
 the files being copied should go into SD slot #1 that has the MUOS operating system.
 
+2. **Create the tools directory if needed:** Navigate to the `MUOS` folder and check if a `tools` directory exists. If not, create it:
+   - **Windows/macOS:** Right-click in the MUOS folder → New Folder → Name it `tools`
+   - **Linux:** Create the directory if it doesn't exist
 
-2. Navigate to the following directories and copy the respective files:
+3. Navigate to the following directories and copy the respective files:
 
 ### 🔧 Required File Transfers:
 
