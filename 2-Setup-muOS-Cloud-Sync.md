@@ -41,16 +41,22 @@ This guide will help you set up cloud synchronization on your muOS Pixie device 
 
 ### 🔧 Required File Transfers:
 
-| Source | Destination on SD Card |
-|--------|------------------------|
-| `rclone` binary | `MUOS/tools/rclone` |
-| `rclone.conf` file | `MUOS/tools/rclone.conf` |
-| `Cloud_Upload_Saves.sh` | `MUOS/tasks/Cloud_Upload_Saves.sh` |
-| `Cloud_Download_Saves.sh` | `MUOS/tasks/Cloud_Download_Saves.sh` |
-| `Cloud_Upload_Saves.task` | `MUOS/tasks/Cloud_Upload_Saves.task` |
-| `Cloud_Download_Saves.task` | `MUOS/tasks/Cloud_Download_Saves.task` |
+| Source (from this repository) | Destination on SD Card |
+|-------------------------------|------------------------|
+| `rclone` binary (downloaded separately) | `MUOS/tools/rclone` |
+| `rclone.conf` file (from your PC setup) | `MUOS/tools/rclone.conf` |
+| `copy_to_tools_directory/Cloud_Upload_Saves.png` | `MUOS/tools/Cloud_Upload_Saves.png` |
+| `copy_to_tools_directory/Cloud_Download_Saves.png` | `MUOS/tools/Cloud_Download_Saves.png` |
+| `copy_to_tasks_directory/Cloud_Upload_Saves.sh` | `MUOS/tasks/Cloud_Upload_Saves.sh` |
+| `copy_to_tasks_directory/Cloud_Download_Saves.sh` | `MUOS/tasks/Cloud_Download_Saves.sh` |
+| `copy_to_tasks_directory/Cloud_Upload_Saves.task` | `MUOS/tasks/Cloud_Upload_Saves.task` |
+| `copy_to_tasks_directory/Cloud_Download_Saves.task` | `MUOS/tasks/Cloud_Download_Saves.task` |
 
-> **📝 Note:** Copy your `rclone.conf` file that you configured with your cloud service from your PC
+> **📝 Important Notes:** 
+> - Copy your `rclone.conf` file that you configured with your cloud service from your PC (Step 1)
+> - The PNG icon files are optional but will provide custom icons for your tasks if your theme supports them
+> - All files from `copy_to_tasks_directory/` go to `MUOS/tasks/` on your SD card
+> - All files from `copy_to_tools_directory/` go to `MUOS/tools/` on your SD card
 
 ## ⚙️ Step 4: Set Executable Permissions
 
@@ -67,6 +73,11 @@ chmod +x tools/rclone
 chmod +x tasks/Cloud_Upload_Saves.sh
 chmod +x tasks/Cloud_Download_Saves.sh
 ```
+
+> **💡 Tip:** You can also copy the executable permissions for all shell scripts at once:
+> ```bash
+> chmod +x tasks/*.sh
+> ```
 
 ## 🔄 Step 5: Reinsert the SD Card and Access Tasks
 
@@ -99,11 +110,12 @@ For more information on muOS Pixie and its features, visit:
 
 ## 🎯 Quick Setup Checklist
 
-- [ ] Downloaded ARMv7 rclone binary
-- [ ] Copied rclone binary to `MUOS/tools/`
-- [ ] Copied rclone.conf to `MUOS/tools/`
-- [ ] Copied shell scripts to `MUOS/tasks/`
-- [ ] Copied task files to `MUOS/tasks/`
+- [ ] Downloaded ARMv7 rclone binary from rclone.org
+- [ ] Copied rclone binary to `MUOS/tools/rclone`
+- [ ] Copied your rclone.conf (from Step 1) to `MUOS/tools/rclone.conf`
+- [ ] Copied PNG files from `copy_to_tools_directory/` to `MUOS/tools/`
+- [ ] Copied shell scripts from `copy_to_tasks_directory/` to `MUOS/tasks/`
+- [ ] Copied task files from `copy_to_tasks_directory/` to `MUOS/tasks/`
 - [ ] Set executable permissions (Unix systems)
 - [ ] Tested cloud upload/download tasks
 
