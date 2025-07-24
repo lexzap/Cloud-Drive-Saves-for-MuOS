@@ -124,7 +124,7 @@ echo ""
 
 ##################################################################################
 ## Download operations
-## 
+##
 ## Using --update flag to only download files that are newer on the cloud
 ## than the local versions. This prevents overwriting newer local saves
 ## with older cloud versions.
