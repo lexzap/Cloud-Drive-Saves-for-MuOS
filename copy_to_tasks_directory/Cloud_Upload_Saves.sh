@@ -124,7 +124,7 @@ echo ""
 
 ##################################################################################
 ## Upload operations
-## 
+##
 ## Using --update flag to only upload files that are newer locally
 ## than the cloud versions. This prevents overwriting newer cloud saves
 ## with older local versions.
