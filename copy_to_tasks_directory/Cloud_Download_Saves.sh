@@ -124,21 +124,26 @@ echo ""
 
 ##################################################################################
 ## Download operations
+##
+## Using --update flag to only download files that are newer on the cloud
+## than the local versions. This prevents overwriting newer local saves
+## with older cloud versions.
 ##################################################################################
 
 ## TODO: fix how to display the info panel in muOS
 # Display an info panel
 #LD_PRELOAD=/run/muos/storage/lib/libpadsp.so /run/muos/storage/bin/infoPanel -t "Downloading Saves" -m "Your saves are being downloaded from Dropbox!" --auto &
 
-# Synchronize saves
-echo "📥 Downloading save files..."
-${RCLONE_BINARY} copy -P -L --no-check-certificate "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" "${SAVE_DIR}/" --config="${RCLONE_CONFIG}"
+# Synchronize saves (only update files that are newer on cloud)
+echo "📥 Downloading save files (only newer files)..."
+${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" "${SAVE_DIR}/" --config="${RCLONE_CONFIG}"
 
-# Synchronize screenshots
-echo "📸 Downloading screenshots..."
-${RCLONE_BINARY} copy -P -L --no-check-certificate "${CLOUD_REMOTE_NAME}:${CLOUD_SCREENSHOT_PATH}/" "${SCREENSHOT_DIR}/" --config="${RCLONE_CONFIG}"
+# Synchronize screenshots (only update files that are newer on cloud)
+echo "📸 Downloading screenshots (only newer files)..."
+${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${CLOUD_REMOTE_NAME}:${CLOUD_SCREENSHOT_PATH}/" "${SCREENSHOT_DIR}/" --config="${RCLONE_CONFIG}"
 
 echo ""
 echo "✅ Download completed successfully!"
+echo "   Only files newer than local versions were updated"
 
 

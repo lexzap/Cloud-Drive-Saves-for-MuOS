@@ -124,19 +124,24 @@ echo ""
 
 ##################################################################################
 ## Upload operations
+##
+## Using --update flag to only upload files that are newer locally
+## than the cloud versions. This prevents overwriting newer cloud saves
+## with older local versions.
 ##################################################################################
 
 ## TODO: fix how to display the info panel in muOS
 # Display an info panel 
 #LD_PRELOAD=/mnt/mmc/MUOS/lib/libpadsp.so /mnt/mmc/MUOS/bin/infoPanel -t "Uploading Saves" -m "Your saves are being uploaded to Cloud Drive!" --auto &
 
-# Synchronize saves
-echo "📤 Uploading save files..."
-${RCLONE_BINARY} copy -P -L --no-check-certificate "${SAVE_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" --config="${RCLONE_CONFIG}"
+# Synchronize saves (only upload files that are newer locally)
+echo "📤 Uploading save files (only newer files)..."
+${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${SAVE_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" --config="${RCLONE_CONFIG}"
 
-# Synchronize screenshots
-echo "📸 Uploading screenshots..."
-${RCLONE_BINARY} copy -P -L --no-check-certificate "${SCREENSHOT_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SCREENSHOT_PATH}/" --config="${RCLONE_CONFIG}"
+# Synchronize screenshots (only upload files that are newer locally)
+echo "📸 Uploading screenshots (only newer files)..."
+${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${SCREENSHOT_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SCREENSHOT_PATH}/" --config="${RCLONE_CONFIG}"
 
 echo ""
 echo "✅ Upload completed successfully!"
+echo "   Only files newer than cloud versions were uploaded"

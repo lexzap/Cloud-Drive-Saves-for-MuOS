@@ -40,6 +40,22 @@ When installed, this project adds **two new tasks** to your muOS Pixie device's 
 1. **📤 Cloud Upload Saves** - Uploads your save files and screenshots to cloud storage
 2. **📥 Cloud Download Saves** - Downloads your save files and screenshots from cloud storage
 
+### 🔄 Smart Synchronization Behavior
+
+Both upload and download operations use **intelligent file comparison** to protect your data:
+
+- **📥 Download**: Only downloads files from the cloud that are **newer** than your local versions
+- **📤 Upload**: Only uploads local files that are **newer** than the cloud versions
+- **🛡️ Data Protection**: Prevents accidental overwriting of newer save files with older ones
+- **⚡ Efficiency**: Skips unnecessary transfers, saving time and bandwidth
+
+**Example Scenarios:**
+- Playing on multiple devices? Each device only syncs files that are actually newer
+- Forgot to download before playing? Your recent local progress won't be lost when uploading
+- Forgot to upload before switching devices? Your cloud progress won't be overwritten
+
+> **💡 Pro Tip:** This bidirectional protection means you can safely run upload/download operations without worrying about losing recent progress from either location!
+
 > **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. The setup guide will automatically install these icons when you run the tasks for the first time.
 
 > **📁 Repository Structure:** This repository is organized with separate directories:
