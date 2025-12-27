@@ -1,6 +1,6 @@
 #!/bin/sh
 ##################################################################################
-## Script for MuOS Pixie to upload all save, screenshots, and video recordings 
+## Script for MuOS Pixie to download all save, screenshots, and video recordings 
 ## folder contents to cloud drive
 ##################################################################################
 
@@ -25,7 +25,7 @@ DOWNLOAD_ICON_SOURCE="${MUOS_ROOT}/tools/Cloud_Download_Saves.png"
 UPLOAD_ICON_TARGET="${TASK_ICONS}/Cloud_Upload_Saves.png"
 DOWNLOAD_ICON_TARGET="${TASK_ICONS}/Cloud_Download_Saves.png"
 
-# Source directories (what we're uploading)
+# Target directories (where we're downloading to)
 SAVE_DIR="${MUOS_USER_DATA}/save"
 SCREENSHOT_DIR="${MUOS_USER_DATA}/screenshot"
 
@@ -38,23 +38,58 @@ CLOUD_SCREENSHOT_PATH="/ambernic/screenshot"
 ## Pre-flight checks
 ##################################################################################
 
-echo "=== muOS Cloud Upload: Pre-flight Checks ==="
+echo "=== muOS Cloud Download: Pre-flight Checks ==="
 echo ""
 
-# Install task icons if they don't exist
+# Detect muOS version (Pixie vs Goose)
+echo "🔍 Detecting muOS version..."
+if [ -d "${MUOS_ROOT}/tasks/clear" ] || [ -d "${MUOS_ROOT}/tasks/restore" ] || [ -d "${MUOS_ROOT}/tasks/storage" ]; then
+    MUOS_VERSION="Goose"
+    echo "   Detected muOS Goose (subdirectory task structure)"
+elif [ -d "${MUOS_ROOT}/tasks" ]; then
+    MUOS_VERSION="Pixie"
+    echo "   Detected muOS Pixie (flat task structure)"
+else
+    MUOS_VERSION="Unknown"
+    echo "   ⚠️  Could not determine muOS version - assuming Goose compatibility"
+fi
+echo ""
+
+# Install task icons with fallback handling
 echo "🎨 Checking task icons..."
+ICON_INSTALLED=false
+
+# Try to install to theme directory (Goose/Pixie with theme support)
 if [ -d "${TASK_ICONS}" ]; then
     if [ -f "${UPLOAD_ICON_SOURCE}" ] && [ ! -f "${UPLOAD_ICON_TARGET}" ]; then
-        echo "   Installing upload task icon..."
-        cp "${UPLOAD_ICON_SOURCE}" "${UPLOAD_ICON_TARGET}"
+        echo "   Installing upload task icon to theme..."
+        if cp "${UPLOAD_ICON_SOURCE}" "${UPLOAD_ICON_TARGET}"; then
+            ICON_INSTALLED=true
+            echo "   ✓ Upload icon installed successfully"
+        else
+            echo "   ⚠️  Failed to install upload icon"
+        fi
     fi
     if [ -f "${DOWNLOAD_ICON_SOURCE}" ] && [ ! -f "${DOWNLOAD_ICON_TARGET}" ]; then
-        echo "   Installing download task icon..."
-        cp "${DOWNLOAD_ICON_SOURCE}" "${DOWNLOAD_ICON_TARGET}"
+        echo "   Installing download task icon to theme..."
+        if cp "${DOWNLOAD_ICON_SOURCE}" "${DOWNLOAD_ICON_TARGET}"; then
+            ICON_INSTALLED=true
+            echo "   ✓ Download icon installed successfully"
+        else
+            echo "   ⚠️  Failed to install download icon"
+        fi
     fi
-    echo "   Task icons ready"
+fi
+
+# Fallback: Check if icons are available in tools directory
+if [ -f "${UPLOAD_ICON_SOURCE}" ] || [ -f "${DOWNLOAD_ICON_SOURCE}" ]; then
+    if [ "$ICON_INSTALLED" = true ]; then
+        echo "   Icons available and installed"
+    else
+        echo "   Icons available in tools directory (theme may not support custom icons)"
+    fi
 else
-    echo "   ⚠️  Task icon directory not found (theme may not support custom icons)"
+    echo "   No custom icons found (this is normal for basic themes)"
 fi
 echo ""
 
@@ -90,7 +125,7 @@ if [ -z "${CLOUD_REMOTE_NAME}" ]; then
 fi
 echo "   Found cloud remote: ${CLOUD_REMOTE_NAME}"
 
-# Check source directories exist
+# Check target directories exist
 if [ ! -d "${SAVE_DIR}" ]; then
     echo "❌ ERROR: Save directory not found at ${SAVE_DIR}"
     echo "   This directory should exist in muOS. Check your muOS installation."
@@ -119,29 +154,34 @@ if ! ${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" > /d
     exit 1
 fi
 
-echo "✅ All checks passed! Starting upload..."
+echo "✅ All checks passed! Starting download..."
 echo ""
 
 ##################################################################################
-## Upload operations
+## Download operations
 ##
-## Using --update flag to only upload files that are newer locally
-## than the cloud versions. This prevents overwriting newer cloud saves
-## with older local versions.
+## Using --update flag to only download files that are newer on the cloud
+## than the local versions. This prevents overwriting newer local saves
+## with older cloud versions.
 ##################################################################################
 
 ## TODO: fix how to display the info panel in muOS
-# Display an info panel 
-#LD_PRELOAD=/mnt/mmc/MUOS/lib/libpadsp.so /mnt/mmc/MUOS/bin/infoPanel -t "Uploading Saves" -m "Your saves are being uploaded to Cloud Drive!" --auto &
+# Display an info panel
+#LD_PRELOAD=/run/muos/storage/lib/libpadsp.so /run/muos/storage/bin/infoPanel -t "Downloading Saves" -m "Your saves are being downloaded from Dropbox!" --auto &
 
-# Synchronize saves (only upload files that are newer locally)
-echo "📤 Uploading save files (only newer files)..."
-${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${SAVE_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" --config="${RCLONE_CONFIG}"
+# Synchronize saves (only download files that are newer on cloud than local)
+echo "📥 Downloading save files (newer cloud files only)..."
+echo "   📝 Note: Only files newer than local versions will be downloaded"
+${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" "${SAVE_DIR}/" --config="${RCLONE_CONFIG}"
 
-# Synchronize screenshots (only upload files that are newer locally)
-echo "📸 Uploading screenshots (only newer files)..."
-${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${SCREENSHOT_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SCREENSHOT_PATH}/" --config="${RCLONE_CONFIG}"
+# Synchronize screenshots (only download files that are newer on cloud than local)
+echo "📸 Downloading screenshots (newer cloud files only)..."
+echo "   📝 Note: Only files newer than local versions will be downloaded"
+${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${CLOUD_REMOTE_NAME}:${CLOUD_SCREENSHOT_PATH}/" "${SCREENSHOT_DIR}/" --config="${RCLONE_CONFIG}"
 
 echo ""
-echo "✅ Upload completed successfully!"
-echo "   Only files newer than cloud versions were uploaded"
+echo "✅ Download completed successfully!"
+echo "   🛡️  Data protection: Only downloaded files that were newer than existing local versions"
+echo "   📅 Timestamp-based sync prevents accidental overwrites"
+
+
