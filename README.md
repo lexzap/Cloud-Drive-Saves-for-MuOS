@@ -63,7 +63,8 @@ Both upload and download operations use **intelligent timestamp-based comparison
 > **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. The setup guide will automatically install these icons when you run the tasks for the first time.
 
 > **📁 Repository Structure:** This repository is organized with separate directories:
-> - `copy_to_tasks_directory/backup/` - Contains shell scripts and task files for muOS (Goose-compatible structure)
+> - `copy_to_tasks_directory/backup/` - Shell scripts and task files for muOS Goose (subdirectory structure)
+> - `copy_to_tasks_directory/pixie/` - Shell scripts and task files for muOS Pixie (flat structure)
 > - `copy_to_tools_directory/` - Contains PNG icons, where you'll also place your rclone binary and config
 > - Sample configuration files for different cloud services are included for reference
 
