@@ -1,10 +1,10 @@
-# 📥 muOS Pixie: Cloud Sync Setup Guide
+# 📥 muOS Cloud Sync Setup Guide
 
-*Set up cloud synchronization (upload/download) on your muOS Pixie device using rclone*
+*Set up cloud synchronization (upload/download) on your muOS device using rclone*
 
 ---
 
-This guide will help you set up cloud synchronization on your muOS Pixie device using the rclone configuration you created on your computer.
+This guide will help you set up cloud synchronization on your muOS device (Pixie or Goose release) using the rclone configuration you created on your computer.
 
 ## 📋 Prerequisites
 
@@ -91,10 +91,12 @@ chmod +x tasks/Cloud_Download_Saves.sh
 1. **Safely eject** the SD card from your computer
 2. **Insert** the SD card back into your Anbernic device
 3. **Power on** the device
-4. **Navigate** to the 'Tasks' menu in muOS Pixie
+4. **Navigate** to the Tasks menu:
+    - **Pixie**: Main menu → Tasks
+    - **Goose**: Applications → Task Toolkit → Backup
 5. You should see:
-   - 📤 **Cloud Upload Saves**
-   - 📥 **Cloud Download Saves**
+    - 📤 **Cloud Upload Saves**
+    - 📥 **Cloud Download Saves**
 6. **Select** the desired task to execute the corresponding script
 
 ## 📝 Important Notes
@@ -111,7 +113,7 @@ chmod +x tasks/Cloud_Download_Saves.sh
 
 ## 📚 Additional Resources
 
-For more information on muOS Pixie and its features, visit:
+For more information on muOS and its features, visit:
 
 🌐 **[https://muos.dev/help/addcontent](https://muos.dev/help/addcontent)**
 

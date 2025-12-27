@@ -1,6 +1,6 @@
 # 📥 muOS Cloud Sync for Retro Handheld Devices
 
-*A cloud drive backup solution for save files and screenshots on muOS Pixie Retro Handheld Enulator Consoles*
+*A cloud drive backup solution for save files and screenshots on muOS Retro Handheld Devices*
 
 ---
 
@@ -35,7 +35,10 @@ This project is adapted from the excellent work by **hotcereal** for the Miyoo M
 
 ## 🚀 What This Does
 
-When installed, this project adds **two new tasks** to your muOS Pixie device's Task menu:
+When installed, this project adds **two new tasks** to your muOS device:
+
+- **Pixie**: Available in the main Tasks menu
+- **Goose**: Available in Applications → Task Toolkit → Backup
 
 1. **📤 Cloud Upload Saves** - Uploads your save files and screenshots to cloud storage
 2. **📥 Cloud Download Saves** - Downloads your save files and screenshots from cloud storage
@@ -71,7 +74,7 @@ Both upload and download operations use **intelligent timestamp-based comparison
 
 ## 📋 Requirements
 
-- muOS Pixie release (or compatible muOS version)
+- muOS (Pixie or Goose release)
 - Desktop computer for initial setup
 - SD card reader
 - Internet connection on your handheld device
