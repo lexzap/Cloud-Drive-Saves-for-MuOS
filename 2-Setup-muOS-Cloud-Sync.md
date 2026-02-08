@@ -103,14 +103,26 @@ If you're using a Unix-based system, ensure the scripts and rclone binary are ex
 
 ```bash
 chmod +x tools/rclone
+```
 
-# Set permissions for Goose (via SSH):
+After the SD card is inserted into your device, you'll need to set permissions for the Goose task scripts. Connect to your device via SSH and run:
+
+```bash
+# On-device via SSH (replace 'root@muos-device' with your device's SSH credentials):
+ssh root@muos-device 'chmod +x /opt/muos/share/task/cloud_upload_saves.sh'
+ssh root@muos-device 'chmod +x /opt/muos/share/task/cloud_download_saves.sh'
+
+# Or, if already connected to the device via SSH, run directly:
 chmod +x /opt/muos/share/task/cloud_upload_saves.sh
 chmod +x /opt/muos/share/task/cloud_download_saves.sh
 ```
 
-> **💡 Tip:** You can also copy the executable permissions for all shell scripts at once:
+> **💡 Tip:** You can also set executable permissions for all shell scripts at once:
 > ```bash
+> # Via SSH from your computer:
+> ssh root@muos-device 'chmod +x /opt/muos/share/task/*.sh'
+> 
+> # Or directly on-device:
 > chmod +x /opt/muos/share/task/*.sh
 > ```
 
