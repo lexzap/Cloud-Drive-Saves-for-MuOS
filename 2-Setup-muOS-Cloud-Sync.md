@@ -95,23 +95,29 @@ ssh root@YOUR_DEVICE_IP \
 
 **For macOS and Linux users only:**
 
-If you're using a Unix-based system, ensure the scripts and rclone binary are executable:
+If you're using a Unix-based system, ensure the scripts and rclone binary are executable.
+
+### On Your Computer (SD Card Files):
 
 1. Open **Terminal**
 2. Navigate to the MUOS directory on the SD card
-3. Run the following commands:
+3. Run the following command:
 
 ```bash
 chmod +x tools/rclone
-
-# Set permissions for Goose (via SSH):
-chmod +x /opt/muos/share/task/cloud_upload_saves.sh
-chmod +x /opt/muos/share/task/cloud_download_saves.sh
 ```
 
-> **💡 Tip:** You can also copy the executable permissions for all shell scripts at once:
+### On Your Device (Task Scripts via SSH):
+
+The task scripts in `/opt/muos/share/task/` must have executable permissions set on the device itself. Run this via SSH:
+
+```bash
+ssh root@YOUR_DEVICE_IP 'chmod +x /opt/muos/share/task/cloud_upload_saves.sh /opt/muos/share/task/cloud_download_saves.sh'
+```
+
+> **💡 Tip:** You can also set executable permissions for all shell scripts at once:
 > ```bash
-> chmod +x /opt/muos/share/task/*.sh
+> ssh root@YOUR_DEVICE_IP 'chmod +x /opt/muos/share/task/*.sh'
 > ```
 
 ## 🔄 Step 5: Reinsert the SD Card and Access Tasks
