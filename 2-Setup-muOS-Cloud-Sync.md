@@ -88,7 +88,7 @@ ssh root@YOUR_DEVICE_IP \
 > **📝 Important Notes:** 
 > - Copy your `rclone.conf` file that you configured with your cloud service from your PC (Step 1)
 > - The PNG icon files are optional but will provide custom icons for your tasks if your theme supports them
-> - All files from `copy_to_tasks_directory/` go to `/opt/muos/share/task/` on your SD card
+> - For Goose, copy the scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/` on the device via SSH (this is on the muOS system partition, not the SD card FAT partition)
 > - All files from `copy_to_tools_directory/` go to `MUOS/tools/` on your SD card
 
 ## ⚙️ Step 4: Set Executable Permissions
