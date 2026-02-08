@@ -57,7 +57,7 @@ Both upload and download operations use **intelligent timestamp-based comparison
 
 > **💡 Pro Tip:** This bidirectional protection means you can safely run upload/download operations without worrying about losing recent progress from either location!
 
-> **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. The setup guide will automatically install these icons when you run the tasks for the first time.
+> **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. These icons are not installed automatically; if you want to use them, you must manually add them to your muOS theme according to your theme's installation instructions.
 
 > **📁 Repository Structure:** This repository is organized with separate directories:
 > - `copy_to_tasks_directory/backup/` - Shell scripts for muOS Goose
