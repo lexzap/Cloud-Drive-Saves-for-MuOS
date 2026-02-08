@@ -212,5 +212,4 @@ file copy_to_tools_directory/*.png
 - Use conditional execution to avoid unnecessary work
 - Exit early on errors to save processing time
 
-This guide ensures consistent, maintainable code across the muOS Cloud Saves project. Follow these guidelines when making changes or adding new features.</content>
-<parameter name="filePath">AGENTS.md
+This guide ensures consistent, maintainable code across the muOS Cloud Saves project. Follow these guidelines when making changes or adding new features.
