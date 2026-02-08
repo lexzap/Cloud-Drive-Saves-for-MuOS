@@ -6,14 +6,17 @@ This document provides guidelines for agentic coding assistants working on the m
 
 ### Shell Script Validation
 ```bash
-# Check syntax of all shell scripts
-bash -n copy_to_tasks_directory/*.sh
+# Check syntax of all shell scripts in backup directory (Goose)
+bash -n copy_to_tasks_directory/backup/*.sh
 
 # Lint with shellcheck (install if needed: brew install shellcheck)
-shellcheck copy_to_tasks_directory/*.sh
+shellcheck copy_to_tasks_directory/backup/*.sh
 
 # Check individual script
-shellcheck copy_to_tasks_directory/Cloud_Upload_Saves.sh
+shellcheck copy_to_tasks_directory/backup/cloud_upload_saves.sh
+
+# Optional: Check legacy pixie scripts if needed
+# shellcheck copy_to_tasks_directory/pixie/*.sh
 ```
 
 ### Testing Scripts
@@ -21,14 +24,16 @@ shellcheck copy_to_tasks_directory/Cloud_Upload_Saves.sh
 # Test script execution (dry run mode if supported)
 # Note: Full testing requires muOS environment with rclone installed
 # Use verbose mode to see detailed output
-bash -x copy_to_tasks_directory/Cloud_Upload_Saves.sh --dry-run 2>&1 | head -50
+bash -x copy_to_tasks_directory/backup/cloud_upload_saves.sh --dry-run 2>&1 | head -50
 
+# Test download script
+bash -x copy_to_tasks_directory/backup/cloud_download_saves.sh --dry-run 2>&1 | head -50
 ```
 
 ### File Validation
 ```bash
-# Check for executable permissions on scripts
-ls -la copy_to_tasks_directory/*.sh
+# Check for executable permissions on scripts (Goose backup directory)
+ls -la copy_to_tasks_directory/backup/*.sh
 
 # Validate PNG files are not corrupted
 file copy_to_tools_directory/*.png
