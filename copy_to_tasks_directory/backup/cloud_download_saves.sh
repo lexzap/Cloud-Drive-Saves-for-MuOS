@@ -7,7 +7,22 @@
 FRONTEND stop
 
 LOGFILE="/tmp/tt_rclone_download.log"
-exec > >(tee -a "${LOGFILE}") 2>&1
+LOGPIPE="/tmp/tt_rclone_download.pipe"
+TEE_PID=""
+
+start_logging() {
+    : > "${LOGFILE}"
+    if [ -p "${LOGPIPE}" ]; then
+        rm -f "${LOGPIPE}"
+    fi
+    if mkfifo "${LOGPIPE}"; then
+        tee -a "${LOGFILE}" < "${LOGPIPE}" &
+        TEE_PID=$!
+        exec > "${LOGPIPE}" 2>&1
+    else
+        exec >> "${LOGFILE}" 2>&1
+    fi
+}
 
 # muOS Goose OS directory paths
 MUOS_ROOT="/mnt/mmc/MUOS"
@@ -29,77 +44,76 @@ CLOUD_REMOTE_NAME=""  # Will be auto-detected from config
 CLOUD_SAVE_PATH="/ambernic/saves"
 CLOUD_SCREENSHOT_PATH="/ambernic/screenshot"
 
+cleanup() {
+    sync
+    echo "All Done!"
+    TBOX sleep 2
+    if [ -n "${TEE_PID}" ]; then
+        kill "${TEE_PID}" >/dev/null 2>&1
+        wait "${TEE_PID}" >/dev/null 2>&1
+    fi
+    if [ -n "${LOGPIPE}" ] && [ -p "${LOGPIPE}" ]; then
+        rm -f "${LOGPIPE}"
+    fi
+    FRONTEND start task
+}
+
+fail() {
+    echo "❌ ERROR: $1" >&2
+    cleanup
+    exit 1
+}
+
+start_logging
+
 echo "Starting cloud download at $(date +"%Y-%m-%d %H:%M:%S")"
 
 # (Goose OS: icon installation handled by task system)
 
 # Check for rclone binary
 if [ ! -f "${RCLONE_BINARY}" ]; then
-    echo "❌ ERROR: rclone binary not found at ${RCLONE_BINARY}"
     echo "   Please follow the setup guide to download and install the ARMv7 rclone binary"
-    FRONTEND start task
-    exit 1
+    fail "rclone binary not found at ${RCLONE_BINARY}"
 fi
 
 # Check if rclone binary is executable
 if [ ! -x "${RCLONE_BINARY}" ]; then
-    echo "❌ ERROR: rclone binary is not executable"
-    echo "   Run: chmod +x ${RCLONE_BINARY}"
-    FRONTEND start task
-    exit 1
+    fail "rclone binary is not executable (run: chmod +x ${RCLONE_BINARY})"
 fi
 
 # Check for rclone config file
 if [ ! -f "${RCLONE_CONFIG}" ]; then
-    echo "❌ ERROR: rclone config file not found at ${RCLONE_CONFIG}"
     echo "   Please copy your rclone.conf file from your computer to this location"
-    FRONTEND start task
-    exit 1
+    fail "rclone config file not found at ${RCLONE_CONFIG}"
 fi
 
 # Auto-detect cloud remote from config file
 echo "🔍 Detecting cloud service from config..."
 CLOUD_REMOTE_NAME=$(grep -E '^\[(onedrive|gdrive|dropbox)\]' "${RCLONE_CONFIG}" | head -n 1 | sed 's/\[\(.*\)\]/\1/')
 if [ -z "${CLOUD_REMOTE_NAME}" ]; then
-    echo "❌ ERROR: No supported cloud remote found in rclone config"
-    echo "   Please ensure your rclone.conf contains a [dropbox], [gdrive], or [onedrive] section"
-    echo "   Supported services: Dropbox, Google Drive, OneDrive"
-    FRONTEND start task
-    exit 1
+    fail "No supported cloud remote found in rclone config"
 fi
 echo "   Found cloud remote: ${CLOUD_REMOTE_NAME}"
 
 # Check target directories exist
 if [ ! -d "${SAVE_DIR}" ]; then
-    echo "❌ ERROR: Save directory not found at ${SAVE_DIR}"
-    echo "   This directory should exist in muOS. Check your muOS installation."
-    FRONTEND start task
-    exit 1
+    fail "Save directory not found at ${SAVE_DIR}"
 fi
 
 if [ ! -d "${SCREENSHOT_DIR}" ]; then
-    echo "❌ ERROR: Screenshot directory not found at ${SCREENSHOT_DIR}"
-    echo "   This directory should exist in muOS. Check your muOS installation."
-    FRONTEND start task
-    exit 1
+    fail "Screenshot directory not found at ${SCREENSHOT_DIR}"
 fi
 
 # Test internet connectivity
 echo "🌐 Testing internet connectivity..."
 if ! ${RCLONE_BINARY} version > /dev/null 2>&1; then
-    echo "❌ ERROR: rclone command failed - check installation"
-    FRONTEND start task
-    exit 1
+    fail "rclone command failed - check installation"
 fi
 
 # Test cloud service connectivity
 echo "☁️  Testing cloud service connectivity..."
 if ! ${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" > /dev/null 2>&1; then
-    echo "❌ ERROR: Cannot connect to cloud service (${CLOUD_REMOTE_NAME})"
-    echo "   Check your internet connection and rclone configuration"
-    echo "   Make sure your device is connected to WiFi"
-    FRONTEND start task
-    exit 1
+    fail "Cannot connect to cloud service (${CLOUD_REMOTE_NAME})"
 fi
 
 echo "✅ All checks passed! Starting download..."
@@ -112,11 +126,17 @@ echo "✅ All checks passed! Starting download..."
 echo "📥 Downloading save files (newer cloud files only)..."
 echo "   📝 Note: Only files newer than local versions will be downloaded"
 ${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" "${SAVE_DIR}/" --config="${RCLONE_CONFIG}"
+if [ $? -ne 0 ]; then
+    fail "Download of save files failed"
+fi
 
 # Synchronize screenshots (only download files that are newer on cloud than local)
 echo "📸 Downloading screenshots (newer cloud files only)..."
 echo "   📝 Note: Only files newer than local versions will be downloaded"
 ${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${CLOUD_REMOTE_NAME}:${CLOUD_SCREENSHOT_PATH}/" "${SCREENSHOT_DIR}/" --config="${RCLONE_CONFIG}"
+if [ $? -ne 0 ]; then
+    fail "Download of screenshots failed"
+fi
 
 echo ""
 echo "✅ Download completed successfully!"
@@ -127,10 +147,7 @@ echo "Sync Filesystem"
 sync
 
 echo "Download completed at $(date +"%Y-%m-%d %H:%M:%S")"
-echo "All Done!"
-TBOX sleep 2
-
-FRONTEND start task
+cleanup
 exit 0
 
 

@@ -7,7 +7,22 @@
 FRONTEND stop
 
 LOGFILE="/tmp/tt_rclone_upload.log"
-exec > >(tee -a "${LOGFILE}") 2>&1
+LOGPIPE="/tmp/tt_rclone_upload.pipe"
+TEE_PID=""
+
+start_logging() {
+    : > "${LOGFILE}"
+    if [ -p "${LOGPIPE}" ]; then
+        rm -f "${LOGPIPE}"
+    fi
+    if mkfifo "${LOGPIPE}"; then
+        tee -a "${LOGFILE}" < "${LOGPIPE}" &
+        TEE_PID=$!
+        exec > "${LOGPIPE}" 2>&1
+    else
+        exec >> "${LOGFILE}" 2>&1
+    fi
+}
 
 # muOS Goose OS directory paths
 MUOS_ROOT="/mnt/mmc/MUOS"
@@ -29,6 +44,13 @@ cleanup() {
     sync
     echo "All Done!"
     TBOX sleep 2
+    if [ -n "${TEE_PID}" ]; then
+        kill "${TEE_PID}" >/dev/null 2>&1
+        wait "${TEE_PID}" >/dev/null 2>&1
+    fi
+    if [ -n "${LOGPIPE}" ] && [ -p "${LOGPIPE}" ]; then
+        rm -f "${LOGPIPE}"
+    fi
     FRONTEND start task
 }
 
@@ -38,9 +60,12 @@ fail() {
     exit 1
 }
 
+start_logging
+
 echo "Starting cloud upload at $(date +"%Y-%m-%d %H:%M:%S")"
 # Check for rclone binary
 if [ ! -f "${RCLONE_BINARY}" ]; then
+    echo "   Please follow the setup guide to download and install the ARMv7 rclone binary"
     fail "rclone binary not found at ${RCLONE_BINARY}"
 fi
 
@@ -51,6 +76,7 @@ fi
 
 # Check for rclone config file
 if [ ! -f "${RCLONE_CONFIG}" ]; then
+    echo "   Please copy your rclone.conf file from your computer to this location"
     fail "rclone config file not found at ${RCLONE_CONFIG}"
 fi
 
@@ -114,8 +140,5 @@ echo "Sync Filesystem"
 sync
 
 echo "Upload completed at $(date +"%Y-%m-%d %H:%M:%S")"
-echo "All Done!"
-TBOX sleep 2
-
-FRONTEND start task
+cleanup
 exit 0
