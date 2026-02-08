@@ -32,9 +32,6 @@ MUOS_USER_DATA="/run/muos/storage"
 RCLONE_BINARY="${MUOS_ROOT}/tools/rclone"
 RCLONE_CONFIG="${MUOS_ROOT}/tools/rclone.conf"
 
-# Task icon path (Goose OS)
-DOWNLOAD_ICON_SOURCE="${MUOS_ROOT}/tools/Cloud_Download_Saves.png"
-
 # Target directories (where we're downloading to)
 SAVE_DIR="${MUOS_USER_DATA}/save"
 SCREENSHOT_DIR="${MUOS_USER_DATA}/screenshot"
