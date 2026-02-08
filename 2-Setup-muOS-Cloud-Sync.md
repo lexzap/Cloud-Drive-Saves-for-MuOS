@@ -63,27 +63,27 @@ the files being copied should go into SD slot #1 that has the MUOS operating sys
 |-------------------------------|------------------------|
 | `copy_to_tasks_directory/backup/cloud_upload_saves.sh` | `/opt/muos/share/task/cloud_upload_saves.sh` |
 | `copy_to_tasks_directory/backup/cloud_download_saves.sh` | `/opt/muos/share/task/cloud_download_saves.sh` |
-| `copy_to_tasks_directory/backup/Cloud_Upload_Saves.task` | `/opt/muos/share/task/Cloud_Upload_Saves.task` |
-| `copy_to_tasks_directory/backup/Cloud_Download_Saves.task` | `/opt/muos/share/task/Cloud_Download_Saves.task` |
 
 ### 🔐 Copy via SSH/SCP (required for /opt/muos/share/task)
 
-Example (replace host, key, and folder as needed):
+Example (replace host and folder as needed):
 
 ```bash
 # Create a folder (optional)
-ssh -i ~/.ssh/your_key root@YOUR_DEVICE_IP 'mkdir -p "/opt/muos/share/task/Rclone Tasks"'
+ssh root@YOUR_DEVICE_IP 'mkdir -p "/opt/muos/share/task/Rclone Tasks"'
 
 # Copy scripts
-scp -i ~/.ssh/your_key copy_to_tasks_directory/backup/cloud_upload_saves.sh \
+scp copy_to_tasks_directory/backup/cloud_upload_saves.sh \
    copy_to_tasks_directory/backup/cloud_download_saves.sh \
    root@YOUR_DEVICE_IP:"/opt/muos/share/task/Rclone Tasks/"
 
 # Set executable permissions
-ssh -i ~/.ssh/your_key root@YOUR_DEVICE_IP \
+ssh root@YOUR_DEVICE_IP \
    'chmod +x "/opt/muos/share/task/Rclone Tasks/cloud_upload_saves.sh" \
    "/opt/muos/share/task/Rclone Tasks/cloud_download_saves.sh"'
 ```
+
+> **🔐 SSH Login Note:** Most users connect as `root` and enter the default muOS password (or whatever you changed it to). If you use keys, add `-i ~/.ssh/your_key` to the commands.
 
 > **📝 Important Notes:** 
 > - Copy your `rclone.conf` file that you configured with your cloud service from your PC (Step 1)
@@ -153,7 +153,6 @@ For more information on muOS and its features, visit:
 - [ ] Copied your rclone.conf (from Step 1) to `MUOS/tools/rclone.conf`
 - [ ] Copied PNG files from `copy_to_tools_directory/` to `MUOS/tools/`
 - [ ] **For Goose**: Copied shell scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/`
-- [ ] **For Goose**: Copied task files from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/`
 - [ ] Set executable permissions (Unix systems)
 - [ ] Tested cloud upload/download tasks
 

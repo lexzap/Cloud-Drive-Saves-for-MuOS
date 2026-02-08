@@ -1,5 +1,0 @@
-[Task]
-Name=Cloud Upload Saves
-Exec=/opt/muos/share/task/cloud_upload_saves.sh
-Icon=Cloud_Upload_Saves.png
-Description=Upload save files, screenshots, and videos to Cloud Drive

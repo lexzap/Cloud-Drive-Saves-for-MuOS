@@ -23,8 +23,6 @@ shellcheck copy_to_tasks_directory/Cloud_Upload_Saves.sh
 # Use verbose mode to see detailed output
 bash -x copy_to_tasks_directory/Cloud_Upload_Saves.sh --dry-run 2>&1 | head -50
 
-# Validate task file syntax
-grep -E "^(Name|Exec|Icon|Description)=" copy_to_tasks_directory/*.task
 ```
 
 ### File Validation
@@ -96,15 +94,14 @@ file copy_to_tools_directory/*.png
 ### Code Organization
 
 #### Directory Structure
-- `copy_to_tasks_directory/backup/`: Cloud backup scripts and task files (Goose-compatible)
+- `copy_to_tasks_directory/backup/`: Cloud backup scripts (Goose-compatible)
 - `copy_to_tools_directory/`: Binary tools and icons
 - `rclone_sample_conf_*/`: Sample configurations
 - Root: Documentation and project files
 
 #### File Naming
 - Use descriptive names: `cloud_upload_saves.sh` not `upload.sh`
-- Match script and task file names: `cloud_upload_saves.sh` → `Cloud_Upload_Saves.task`
-- Use consistent capitalization (lowercase for scripts, Title Case for task files)
+- Keep script names descriptive and consistent (e.g., `cloud_upload_saves.sh`)
 - Organize in category subdirectories: `backup/` for cloud sync tasks
 
 ### Security Practices
@@ -180,9 +177,9 @@ file copy_to_tools_directory/*.png
 - Follow muOS directory structure conventions
 
 #### Task Integration
-- Task files use INI-like format
-- Icon field references PNG files in theme directory
-- Description should be user-friendly and clear
+- Task scripts live under `/opt/muos/share/task` and must be executable
+- Icons are optional and provided via PNG files in `copy_to_tools_directory/`
+- Descriptions should be user-friendly when referenced in documentation
 
 #### Resource Constraints
 - Scripts run on resource-limited handheld hardware

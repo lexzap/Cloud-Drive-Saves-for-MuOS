@@ -35,7 +35,7 @@ This project is adapted from the excellent work by **hotcereal** for the Miyoo M
 
 ## 🚀 What This Does
 
-When installed, this project adds **two new tasks** to your muOS device, available in Applications → Task Toolkit → Backup.
+When installed, this project adds **two new task scripts** to your muOS device, available in Applications → Task Toolkit → Backup.
 
 1. **📤 Cloud Upload Saves** - Uploads your save files and screenshots to cloud storage
 2. **📥 Cloud Download Saves** - Downloads your save files and screenshots from cloud storage
@@ -60,7 +60,7 @@ Both upload and download operations use **intelligent timestamp-based comparison
 > **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. The setup guide will automatically install these icons when you run the tasks for the first time.
 
 > **📁 Repository Structure:** This repository is organized with separate directories:
-> - `copy_to_tasks_directory/backup/` - Shell scripts and task files for muOS Goose
+> - `copy_to_tasks_directory/backup/` - Shell scripts for muOS Goose
 > - `copy_to_tools_directory/` - Contains PNG icons, where you'll also place your rclone binary and config
 > - Sample configuration files for different cloud services are included for reference
 
