@@ -170,10 +170,8 @@ file copy_to_tools_directory/*.png
 ### muOS-Specific Considerations
 
 #### Version Compatibility
-- Support both Pixie and Goose releases with automatic version detection
-- Goose: Tasks organized in category subdirectories (backup/, clear/, restore/, etc.)
-- Pixie: Tasks in flat structure under tasks/ directory
-- Use version detection logic to provide appropriate user feedback
+- Target muOS Goose release only
+- Tasks live under /opt/muos/share/task
 
 #### Path Conventions
 - Use absolute paths for muOS directories

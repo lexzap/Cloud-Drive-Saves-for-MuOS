@@ -4,7 +4,7 @@
 
 ---
 
-This guide will help you set up cloud synchronization on your muOS device (Pixie or Goose release) using the rclone configuration you created on your computer.
+This guide will help you set up cloud synchronization on your muOS device (Goose release) using the rclone configuration you created on your computer.
 
 ## 📋 Prerequisites
 
@@ -44,11 +44,13 @@ the files being copied should go into SD slot #1 that has the MUOS operating sys
    - **Windows/macOS:** Right-click in the MUOS folder → New Folder → Name it `tools`
    - **Linux:** Create the directory if it doesn't exist
 
-3. **Choose your installation path based on your muOS version:**
+3. **Choose your installation path for muOS Goose:**
+
+> **Important:** The task directory `/opt/muos/share/task` is on the Linux system partition, not the SD card’s FAT partition. macOS/Windows can’t write to it directly. You must use **SSH/SCP** to copy task scripts and set permissions.
 
 ### 🔧 Required File Transfers:
 
-**For ALL versions (both Pixie and Goose):**
+**For muOS Goose:**
 | Source (from this repository) | Destination on SD Card |
 |-------------------------------|------------------------|
 | `rclone` armv7 32-bit linux binary (downloaded separately) | `MUOS/tools/rclone` |
@@ -56,26 +58,37 @@ the files being copied should go into SD slot #1 that has the MUOS operating sys
 | `copy_to_tools_directory/Cloud_Upload_Saves.png` | `MUOS/tools/Cloud_Upload_Saves.png` |
 | `copy_to_tools_directory/Cloud_Download_Saves.png` | `MUOS/tools/Cloud_Download_Saves.png` |
 
-**📱 For muOS Pixie users:**
-| Source (from this repository) | Destination on SD Card |
-|-------------------------------|------------------------|
-| `copy_to_tasks_directory/pixie/cloud_upload_saves.sh` | `MUOS/tasks/cloud_upload_saves.sh` |
-| `copy_to_tasks_directory/pixie/cloud_download_saves.sh` | `MUOS/tasks/cloud_download_saves.sh` |
-| `copy_to_tasks_directory/pixie/Cloud_Upload_Saves.task` | `MUOS/tasks/Cloud_Upload_Saves.task` |
-| `copy_to_tasks_directory/pixie/Cloud_Download_Saves.task` | `MUOS/tasks/Cloud_Download_Saves.task` |
-
 **🦆 For muOS Goose users:**
 | Source (from this repository) | Destination on SD Card |
 |-------------------------------|------------------------|
-| `copy_to_tasks_directory/backup/cloud_upload_saves.sh` | `MUOS/tasks/backup/cloud_upload_saves.sh` |
-| `copy_to_tasks_directory/backup/cloud_download_saves.sh` | `MUOS/tasks/backup/cloud_download_saves.sh` |
-| `copy_to_tasks_directory/backup/Cloud_Upload_Saves.task` | `MUOS/tasks/backup/Cloud_Upload_Saves.task` |
-| `copy_to_tasks_directory/backup/Cloud_Download_Saves.task` | `MUOS/tasks/backup/Cloud_Download_Saves.task` |
+| `copy_to_tasks_directory/backup/cloud_upload_saves.sh` | `/opt/muos/share/task/cloud_upload_saves.sh` |
+| `copy_to_tasks_directory/backup/cloud_download_saves.sh` | `/opt/muos/share/task/cloud_download_saves.sh` |
+| `copy_to_tasks_directory/backup/Cloud_Upload_Saves.task` | `/opt/muos/share/task/Cloud_Upload_Saves.task` |
+| `copy_to_tasks_directory/backup/Cloud_Download_Saves.task` | `/opt/muos/share/task/Cloud_Download_Saves.task` |
+
+### 🔐 Copy via SSH/SCP (required for /opt/muos/share/task)
+
+Example (replace host, key, and folder as needed):
+
+```bash
+# Create a folder (optional)
+ssh -i ~/.ssh/your_key root@YOUR_DEVICE_IP 'mkdir -p "/opt/muos/share/task/Rclone Tasks"'
+
+# Copy scripts
+scp -i ~/.ssh/your_key copy_to_tasks_directory/backup/cloud_upload_saves.sh \
+   copy_to_tasks_directory/backup/cloud_download_saves.sh \
+   root@YOUR_DEVICE_IP:"/opt/muos/share/task/Rclone Tasks/"
+
+# Set executable permissions
+ssh -i ~/.ssh/your_key root@YOUR_DEVICE_IP \
+   'chmod +x "/opt/muos/share/task/Rclone Tasks/cloud_upload_saves.sh" \
+   "/opt/muos/share/task/Rclone Tasks/cloud_download_saves.sh"'
+```
 
 > **📝 Important Notes:** 
 > - Copy your `rclone.conf` file that you configured with your cloud service from your PC (Step 1)
 > - The PNG icon files are optional but will provide custom icons for your tasks if your theme supports them
-> - All files from `copy_to_tasks_directory/` go to `MUOS/tasks/` on your SD card
+> - All files from `copy_to_tasks_directory/` go to `/opt/muos/share/task/` on your SD card
 > - All files from `copy_to_tools_directory/` go to `MUOS/tools/` on your SD card
 
 ## ⚙️ Step 4: Set Executable Permissions
@@ -91,23 +104,14 @@ If you're using a Unix-based system, ensure the scripts and rclone binary are ex
 ```bash
 chmod +x tools/rclone
 
-# Set permissions based on your muOS version:
-# For Pixie users:
-chmod +x tasks/cloud_upload_saves.sh
-chmod +x tasks/cloud_download_saves.sh
-
-# For Goose users:
-chmod +x tasks/backup/cloud_upload_saves.sh
-chmod +x tasks/backup/cloud_download_saves.sh
+# Set permissions for Goose (via SSH):
+chmod +x /opt/muos/share/task/cloud_upload_saves.sh
+chmod +x /opt/muos/share/task/cloud_download_saves.sh
 ```
 
 > **💡 Tip:** You can also copy the executable permissions for all shell scripts at once:
 > ```bash
-> # For Pixie:
-> chmod +x tasks/*.sh
->
-> # For Goose:
-> chmod +x tasks/backup/*.sh
+> chmod +x /opt/muos/share/task/*.sh
 > ```
 
 ## 🔄 Step 5: Reinsert the SD Card and Access Tasks
@@ -116,8 +120,7 @@ chmod +x tasks/backup/cloud_download_saves.sh
 2. **Insert** the SD card back into your Anbernic device
 3. **Power on** the device
 4. **Navigate** to the Tasks menu:
-    - **Pixie**: Main menu → Tasks
-    - **Goose**: Applications → Task Toolkit → Backup
+   - **Goose**: Applications → Task Toolkit → Backup
 5. You should see:
     - 📤 **Cloud Upload Saves**
     - 📥 **Cloud Download Saves**
@@ -131,7 +134,7 @@ chmod +x tasks/backup/cloud_download_saves.sh
 
 > **🔗 Compatibility:** The tasks utilize symlinked paths (`/mnt/mmc/MUOS/`) for compatibility across different storage setups
 
-> **🎯 muOS Version Support:** This setup now supports both Pixie and Goose releases with automatic version detection and proper task organization
+> **🎯 muOS Version Support:** This setup supports Goose release tasks under `/opt/muos/share/task`
 
 > **⚙️ Customization:** Customize the scripts as needed to match your specific directory structures or cloud service configurations
 
@@ -149,10 +152,8 @@ For more information on muOS and its features, visit:
 - [ ] Copied rclone binary to `MUOS/tools/rclone`
 - [ ] Copied your rclone.conf (from Step 1) to `MUOS/tools/rclone.conf`
 - [ ] Copied PNG files from `copy_to_tools_directory/` to `MUOS/tools/`
-- [ ] **For Pixie**: Copied shell scripts from `copy_to_tasks_directory/pixie/` to `MUOS/tasks/` (flat structure)
-- [ ] **For Pixie**: Copied task files from `copy_to_tasks_directory/pixie/` to `MUOS/tasks/` (flat structure)
-- [ ] **For Goose**: Copied shell scripts from `copy_to_tasks_directory/backup/` to `MUOS/tasks/backup/` (subdirectory)
-- [ ] **For Goose**: Copied task files from `copy_to_tasks_directory/backup/` to `MUOS/tasks/backup/` (subdirectory)
+- [ ] **For Goose**: Copied shell scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/`
+- [ ] **For Goose**: Copied task files from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/`
 - [ ] Set executable permissions (Unix systems)
 - [ ] Tested cloud upload/download tasks
 

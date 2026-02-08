@@ -1,30 +1,21 @@
 #!/bin/sh
-##################################################################################
-## Script for MuOS Pixie to upload all save, screenshots, and video recordings 
-## folder contents to cloud drive
-##################################################################################
+# HELP: Upload saves/screenshots to Cloud Drive
+# ICON: Cloud_Upload_Saves
 
-echo "$0 $*"
+. /opt/muos/script/var/func.sh
 
-##################################################################################
-## Configuration Variables
-##################################################################################
+FRONTEND stop
 
-# muOS directory paths
+LOGFILE="/tmp/tt_rclone_upload.log"
+exec > >(tee -a "${LOGFILE}") 2>&1
+
+# muOS Goose OS directory paths
 MUOS_ROOT="/mnt/mmc/MUOS"
 MUOS_USER_DATA="/run/muos/storage"
 
 # Tool and config paths
 RCLONE_BINARY="${MUOS_ROOT}/tools/rclone"
 RCLONE_CONFIG="${MUOS_ROOT}/tools/rclone.conf"
-
-# Task icon paths
-TASK_ICONS="${MUOS_ROOT}/theme/active/glyph/muxtask"
-UPLOAD_ICON_SOURCE="${MUOS_ROOT}/tools/Cloud_Upload_Saves.png"
-DOWNLOAD_ICON_SOURCE="${MUOS_ROOT}/tools/Cloud_Download_Saves.png"
-UPLOAD_ICON_TARGET="${TASK_ICONS}/Cloud_Upload_Saves.png"
-DOWNLOAD_ICON_TARGET="${TASK_ICONS}/Cloud_Download_Saves.png"
-
 # Source directories (what we're uploading)
 SAVE_DIR="${MUOS_USER_DATA}/save"
 SCREENSHOT_DIR="${MUOS_USER_DATA}/screenshot"
@@ -34,152 +25,97 @@ CLOUD_REMOTE_NAME=""  # Will be auto-detected from config
 CLOUD_SAVE_PATH="/ambernic/saves"
 CLOUD_SCREENSHOT_PATH="/ambernic/screenshot"
 
-##################################################################################
-## Pre-flight checks
-##################################################################################
+cleanup() {
+    sync
+    echo "All Done!"
+    TBOX sleep 2
+    FRONTEND start task
+}
 
-echo "=== muOS Cloud Upload: Pre-flight Checks ==="
-echo ""
+fail() {
+    echo "❌ ERROR: $1" >&2
+    cleanup
+    exit 1
+}
 
-# Detect muOS version (Pixie vs Goose)
-echo "🔍 Detecting muOS version..."
-if [ -d "${MUOS_ROOT}/tasks/clear" ] || [ -d "${MUOS_ROOT}/tasks/restore" ] || [ -d "${MUOS_ROOT}/tasks/storage" ]; then
-    MUOS_VERSION="Goose"
-    echo "   Detected muOS Goose (subdirectory task structure)"
-elif [ -d "${MUOS_ROOT}/tasks" ]; then
-    MUOS_VERSION="Pixie"
-    echo "   Detected muOS Pixie (flat task structure)"
-else
-    MUOS_VERSION="Unknown"
-    echo "   ⚠️  Could not determine muOS version - assuming Goose compatibility"
-fi
-echo ""
-
-# Install task icons with fallback handling
-echo "🎨 Checking task icons..."
-ICON_INSTALLED=false
-
-# Try to install to theme directory (Goose/Pixie with theme support)
-if [ -d "${TASK_ICONS}" ]; then
-    if [ -f "${UPLOAD_ICON_SOURCE}" ] && [ ! -f "${UPLOAD_ICON_TARGET}" ]; then
-        echo "   Installing upload task icon to theme..."
-        if cp "${UPLOAD_ICON_SOURCE}" "${UPLOAD_ICON_TARGET}"; then
-            ICON_INSTALLED=true
-            echo "   ✓ Upload icon installed successfully"
-        else
-            echo "   ⚠️  Failed to install upload icon"
-        fi
-    fi
-    if [ -f "${DOWNLOAD_ICON_SOURCE}" ] && [ ! -f "${DOWNLOAD_ICON_TARGET}" ]; then
-        echo "   Installing download task icon to theme..."
-        if cp "${DOWNLOAD_ICON_SOURCE}" "${DOWNLOAD_ICON_TARGET}"; then
-            ICON_INSTALLED=true
-            echo "   ✓ Download icon installed successfully"
-        else
-            echo "   ⚠️  Failed to install download icon"
-        fi
-    fi
-fi
-
-# Fallback: Check if icons are available in tools directory
-if [ -f "${UPLOAD_ICON_SOURCE}" ] || [ -f "${DOWNLOAD_ICON_SOURCE}" ]; then
-    if [ "$ICON_INSTALLED" = true ]; then
-        echo "   Icons available and installed"
-    else
-        echo "   Icons available in tools directory (theme may not support custom icons)"
-    fi
-else
-    echo "   No custom icons found (this is normal for basic themes)"
-fi
-echo ""
-
+echo "Starting cloud upload at $(date +"%Y-%m-%d %H:%M:%S")"
 # Check for rclone binary
 if [ ! -f "${RCLONE_BINARY}" ]; then
-    echo "❌ ERROR: rclone binary not found at ${RCLONE_BINARY}"
-    echo "   Please follow the setup guide to download and install the ARMv7 rclone binary"
-    exit 1
+    fail "rclone binary not found at ${RCLONE_BINARY}"
 fi
 
 # Check if rclone binary is executable
 if [ ! -x "${RCLONE_BINARY}" ]; then
-    echo "❌ ERROR: rclone binary is not executable"
-    echo "   Run: chmod +x ${RCLONE_BINARY}"
-    exit 1
+    fail "rclone binary is not executable (run: chmod +x ${RCLONE_BINARY})"
 fi
 
 # Check for rclone config file
 if [ ! -f "${RCLONE_CONFIG}" ]; then
-    echo "❌ ERROR: rclone config file not found at ${RCLONE_CONFIG}"
-    echo "   Please copy your rclone.conf file from your computer to this location"
-    exit 1
+    fail "rclone config file not found at ${RCLONE_CONFIG}"
 fi
 
 # Auto-detect cloud remote from config file
 echo "🔍 Detecting cloud service from config..."
 CLOUD_REMOTE_NAME=$(grep -E '^\[(onedrive|gdrive|dropbox)\]' "${RCLONE_CONFIG}" | head -n 1 | sed 's/\[\(.*\)\]/\1/')
 if [ -z "${CLOUD_REMOTE_NAME}" ]; then
-    echo "❌ ERROR: No supported cloud remote found in rclone config"
-    echo "   Please ensure your rclone.conf contains a [dropbox], [gdrive], or [onedrive] section"
-    echo "   Supported services: Dropbox, Google Drive, OneDrive"
-    exit 1
+    fail "No supported cloud remote found in rclone config"
 fi
 echo "   Found cloud remote: ${CLOUD_REMOTE_NAME}"
 
 # Check source directories exist
 if [ ! -d "${SAVE_DIR}" ]; then
-    echo "❌ ERROR: Save directory not found at ${SAVE_DIR}"
-    echo "   This directory should exist in muOS. Check your muOS installation."
-    exit 1
+    fail "Save directory not found at ${SAVE_DIR}"
 fi
 
 if [ ! -d "${SCREENSHOT_DIR}" ]; then
-    echo "❌ ERROR: Screenshot directory not found at ${SCREENSHOT_DIR}"
-    echo "   This directory should exist in muOS. Check your muOS installation."
-    exit 1
+    fail "Screenshot directory not found at ${SCREENSHOT_DIR}"
 fi
 
 # Test internet connectivity
 echo "🌐 Testing internet connectivity..."
 if ! ${RCLONE_BINARY} version > /dev/null 2>&1; then
-    echo "❌ ERROR: rclone command failed - check installation"
-    exit 1
+    fail "rclone command failed - check installation"
 fi
 
 # Test cloud service connectivity
 echo "☁️  Testing cloud service connectivity..."
 if ! ${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" > /dev/null 2>&1; then
-    echo "❌ ERROR: Cannot connect to cloud service (${CLOUD_REMOTE_NAME})"
-    echo "   Check your internet connection and rclone configuration"
-    echo "   Make sure your device is connected to WiFi"
-    exit 1
+    fail "Cannot connect to cloud service (${CLOUD_REMOTE_NAME})"
 fi
 
 echo "✅ All checks passed! Starting upload..."
-echo ""
-
-##################################################################################
-## Upload operations
-##
-## Using --update flag to only upload files that are newer locally
-## than the cloud versions. This prevents overwriting newer cloud saves
-## with older local versions.
-##################################################################################
 
 ## TODO: fix how to display the info panel in muOS
-# Display an info panel 
+# Display an info panel
 #LD_PRELOAD=/mnt/mmc/MUOS/lib/libpadsp.so /mnt/mmc/MUOS/bin/infoPanel -t "Uploading Saves" -m "Your saves are being uploaded to Cloud Drive!" --auto &
 
 # Synchronize saves (only upload files that are newer locally than cloud)
 echo "📤 Uploading save files (newer local files only)..."
 echo "   📝 Note: Only files newer than cloud versions will be uploaded"
 ${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${SAVE_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" --config="${RCLONE_CONFIG}"
+if [ $? -ne 0 ]; then
+    fail "Upload of save files failed"
+fi
 
 # Synchronize screenshots (only upload files that are newer locally than cloud)
 echo "📸 Uploading screenshots (newer local files only)..."
 echo "   📝 Note: Only files newer than cloud versions will be uploaded"
 ${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${SCREENSHOT_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SCREENSHOT_PATH}/" --config="${RCLONE_CONFIG}"
+if [ $? -ne 0 ]; then
+    fail "Upload of screenshots failed"
+fi
 
 echo ""
 echo "✅ Upload completed successfully!"
 echo "   🛡️  Data protection: Only uploaded files that were newer than existing cloud versions"
 echo "   📅 Timestamp-based sync prevents accidental overwrites"
+
+echo "Sync Filesystem"
+sync
+
+echo "Upload completed at $(date +"%Y-%m-%d %H:%M:%S")"
+echo "All Done!"
+TBOX sleep 2
+
+FRONTEND start task
+exit 0
