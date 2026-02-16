@@ -1,12 +1,12 @@
 # 📥 muOS Cloud Sync for Retro Handheld Devices
 
-*A cloud drive backup solution for save files and screenshots on muOS Pixie Retro Handheld Enulator Consoles*
+*A cloud drive backup solution for save files and screenshots on muOS Retro Handheld Devices*
 
 ---
 
 ## 🎮 Overview
 
-This project provides a complete cloud synchronization solution for **muOS retro handheld devices**, specifically designed and tested for the **muOS Pixie release**. It allows you to automatically backup and restore your precious save files and screenshots to popular cloud storage services.
+This project provides a complete cloud synchronization solution for **muOS retro handheld devices** running the **Goose release**. It allows you to automatically backup and restore your precious save files and screenshots to popular cloud storage services.
 
 ### ✨ Key Features
 
@@ -35,14 +35,14 @@ This project is adapted from the excellent work by **hotcereal** for the Miyoo M
 
 ## 🚀 What This Does
 
-When installed, this project adds **two new tasks** to your muOS Pixie device's Task menu:
+When installed, this project adds **two new task scripts** to your muOS device, available in Applications → Task Toolkit → Backup.
 
 1. **📤 Cloud Upload Saves** - Uploads your save files and screenshots to cloud storage
 2. **📥 Cloud Download Saves** - Downloads your save files and screenshots from cloud storage
 
 ### 🔄 Smart Synchronization Behavior
 
-Both upload and download operations use **intelligent file comparison** to protect your data:
+Both upload and download operations use **intelligent timestamp-based comparison** to protect your data:
 
 - **📥 Download**: Only downloads files from the cloud that are **newer** than your local versions
 - **📤 Upload**: Only uploads local files that are **newer** than the cloud versions
@@ -53,13 +53,14 @@ Both upload and download operations use **intelligent file comparison** to prote
 - Playing on multiple devices? Each device only syncs files that are actually newer
 - Forgot to download before playing? Your recent local progress won't be lost when uploading
 - Forgot to upload before switching devices? Your cloud progress won't be overwritten
+- **Multi-device sync**: If you play on Device A, upload, then play on Device B and download - only newer files from A will be downloaded to B
 
 > **💡 Pro Tip:** This bidirectional protection means you can safely run upload/download operations without worrying about losing recent progress from either location!
 
-> **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. The setup guide will automatically install these icons when you run the tasks for the first time.
+> **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. These icons are not installed automatically; if you want to use them, you must manually add them to your muOS theme according to your theme's installation instructions.
 
 > **📁 Repository Structure:** This repository is organized with separate directories:
-> - `copy_to_tasks_directory/` - Contains shell scripts and task files for muOS
+> - `copy_to_tasks_directory/backup/` - Shell scripts for muOS Goose
 > - `copy_to_tools_directory/` - Contains PNG icons, where you'll also place your rclone binary and config
 > - Sample configuration files for different cloud services are included for reference
 
@@ -70,7 +71,7 @@ Both upload and download operations use **intelligent file comparison** to prote
 
 ## 📋 Requirements
 
-- muOS Pixie release (or compatible muOS version)
+- muOS (Goose release)
 - Desktop computer for initial setup
 - SD card reader
 - Internet connection on your handheld device

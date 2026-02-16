@@ -90,7 +90,7 @@ Your rclone configuration is stored in a file named `rclone.conf`.
 
 > **🎯 Important for muOS Setup:** This `rclone.conf` file will be used in Step 2 to copy to your muOS handheld's root OS SD card. Make note of the file location as you'll need to transfer it to your handheld device.
 
-> **💡 Tip:** You can copy this file to other devices (e.g., muOS Pixie) to replicate the configuration.
+> **💡 Tip:** You can copy this file to other muOS devices (Goose) to replicate the configuration.
 
 ## 📚 Additional Resources
 
@@ -98,4 +98,4 @@ For more information and advanced configurations, visit: [https://rclone.org/doc
 
 ---
 
-*Next step: [Setup muOS Pixie Cloud Sync](./2-Setup-muOS-Cloud-Sync.md)*
+*Next step: [Setup muOS Cloud Sync](./2-Setup-muOS-Cloud-Sync.md)*

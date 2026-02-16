@@ -1,16 +1,22 @@
 #!/bin/sh
+# HELP: Download saves/screenshots from Cloud Drive
+# ICON: Cloud_Download_Saves
+
 ##################################################################################
-## Script for MuOS Pixie to download all save, screenshots, and video recordings 
-## folder contents to cloud drive
+# Goose OS task: Download all save and screenshot folders from cloud drive
 ##################################################################################
+
+. /opt/muos/script/var/func.sh
+
+FRONTEND stop
 
 echo "$0 $*"
 
 ##################################################################################
-## Configuration Variables
+# Configuration Variables
 ##################################################################################
 
-# muOS directory paths
+# muOS Goose OS directory paths
 MUOS_ROOT="/mnt/mmc/MUOS"
 MUOS_USER_DATA="/run/muos/storage"
 
@@ -18,12 +24,8 @@ MUOS_USER_DATA="/run/muos/storage"
 RCLONE_BINARY="${MUOS_ROOT}/tools/rclone"
 RCLONE_CONFIG="${MUOS_ROOT}/tools/rclone.conf"
 
-# Task icon paths
-TASK_ICONS="${MUOS_ROOT}/theme/active/glyph/muxtask"
-UPLOAD_ICON_SOURCE="${MUOS_ROOT}/tools/Cloud_Upload_Saves.png"
+# Task icon path (Goose OS)
 DOWNLOAD_ICON_SOURCE="${MUOS_ROOT}/tools/Cloud_Download_Saves.png"
-UPLOAD_ICON_TARGET="${TASK_ICONS}/Cloud_Upload_Saves.png"
-DOWNLOAD_ICON_TARGET="${TASK_ICONS}/Cloud_Download_Saves.png"
 
 # Target directories (where we're downloading to)
 SAVE_DIR="${MUOS_USER_DATA}/save"
@@ -35,33 +37,19 @@ CLOUD_SAVE_PATH="/ambernic/saves"
 CLOUD_SCREENSHOT_PATH="/ambernic/screenshot"
 
 ##################################################################################
-## Pre-flight checks
+# Pre-flight checks
 ##################################################################################
 
 echo "=== muOS Cloud Download: Pre-flight Checks ==="
 echo ""
 
-# Install task icons if they don't exist
-echo "🎨 Checking task icons..."
-if [ -d "${TASK_ICONS}" ]; then
-    if [ -f "${UPLOAD_ICON_SOURCE}" ] && [ ! -f "${UPLOAD_ICON_TARGET}" ]; then
-        echo "   Installing upload task icon..."
-        cp "${UPLOAD_ICON_SOURCE}" "${UPLOAD_ICON_TARGET}"
-    fi
-    if [ -f "${DOWNLOAD_ICON_SOURCE}" ] && [ ! -f "${DOWNLOAD_ICON_TARGET}" ]; then
-        echo "   Installing download task icon..."
-        cp "${DOWNLOAD_ICON_SOURCE}" "${DOWNLOAD_ICON_TARGET}"
-    fi
-    echo "   Task icons ready"
-else
-    echo "   ⚠️  Task icon directory not found (theme may not support custom icons)"
-fi
-echo ""
+# (Goose OS: icon installation handled by task system)
 
 # Check for rclone binary
 if [ ! -f "${RCLONE_BINARY}" ]; then
     echo "❌ ERROR: rclone binary not found at ${RCLONE_BINARY}"
     echo "   Please follow the setup guide to download and install the ARMv7 rclone binary"
+    FRONTEND start task
     exit 1
 fi
 
@@ -69,6 +57,7 @@ fi
 if [ ! -x "${RCLONE_BINARY}" ]; then
     echo "❌ ERROR: rclone binary is not executable"
     echo "   Run: chmod +x ${RCLONE_BINARY}"
+    FRONTEND start task
     exit 1
 fi
 
@@ -76,6 +65,7 @@ fi
 if [ ! -f "${RCLONE_CONFIG}" ]; then
     echo "❌ ERROR: rclone config file not found at ${RCLONE_CONFIG}"
     echo "   Please copy your rclone.conf file from your computer to this location"
+    FRONTEND start task
     exit 1
 fi
 
@@ -86,6 +76,7 @@ if [ -z "${CLOUD_REMOTE_NAME}" ]; then
     echo "❌ ERROR: No supported cloud remote found in rclone config"
     echo "   Please ensure your rclone.conf contains a [dropbox], [gdrive], or [onedrive] section"
     echo "   Supported services: Dropbox, Google Drive, OneDrive"
+    FRONTEND start task
     exit 1
 fi
 echo "   Found cloud remote: ${CLOUD_REMOTE_NAME}"
@@ -94,12 +85,14 @@ echo "   Found cloud remote: ${CLOUD_REMOTE_NAME}"
 if [ ! -d "${SAVE_DIR}" ]; then
     echo "❌ ERROR: Save directory not found at ${SAVE_DIR}"
     echo "   This directory should exist in muOS. Check your muOS installation."
+    FRONTEND start task
     exit 1
 fi
 
 if [ ! -d "${SCREENSHOT_DIR}" ]; then
     echo "❌ ERROR: Screenshot directory not found at ${SCREENSHOT_DIR}"
     echo "   This directory should exist in muOS. Check your muOS installation."
+    FRONTEND start task
     exit 1
 fi
 
@@ -107,6 +100,7 @@ fi
 echo "🌐 Testing internet connectivity..."
 if ! ${RCLONE_BINARY} version > /dev/null 2>&1; then
     echo "❌ ERROR: rclone command failed - check installation"
+    FRONTEND start task
     exit 1
 fi
 
@@ -116,6 +110,7 @@ if ! ${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" > /d
     echo "❌ ERROR: Cannot connect to cloud service (${CLOUD_REMOTE_NAME})"
     echo "   Check your internet connection and rclone configuration"
     echo "   Make sure your device is connected to WiFi"
+    FRONTEND start task
     exit 1
 fi
 
@@ -134,16 +129,25 @@ echo ""
 # Display an info panel
 #LD_PRELOAD=/run/muos/storage/lib/libpadsp.so /run/muos/storage/bin/infoPanel -t "Downloading Saves" -m "Your saves are being downloaded from Dropbox!" --auto &
 
-# Synchronize saves (only update files that are newer on cloud)
-echo "📥 Downloading save files (only newer files)..."
+# Synchronize saves (only download files that are newer on cloud than local)
+echo "📥 Downloading save files (newer cloud files only)..."
+echo "   📝 Note: Only files newer than local versions will be downloaded"
 ${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" "${SAVE_DIR}/" --config="${RCLONE_CONFIG}"
 
-# Synchronize screenshots (only update files that are newer on cloud)
-echo "📸 Downloading screenshots (only newer files)..."
+# Synchronize screenshots (only download files that are newer on cloud than local)
+echo "📸 Downloading screenshots (newer cloud files only)..."
+echo "   📝 Note: Only files newer than local versions will be downloaded"
 ${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${CLOUD_REMOTE_NAME}:${CLOUD_SCREENSHOT_PATH}/" "${SCREENSHOT_DIR}/" --config="${RCLONE_CONFIG}"
 
 echo ""
 echo "✅ Download completed successfully!"
-echo "   Only files newer than local versions were updated"
+echo "   🛡️  Data protection: Only downloaded files that were newer than existing local versions"
+echo "   📅 Timestamp-based sync prevents accidental overwrites"
+
+sync
+TBOX sleep 2
+
+FRONTEND start task
+exit 0
 
 
