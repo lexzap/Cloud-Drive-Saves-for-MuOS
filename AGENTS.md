@@ -19,7 +19,7 @@ shellcheck copy_to_tasks_directory/Cloud_Upload_Saves.sh
 ### Testing Scripts
 ```bash
 # Test script execution (dry run mode if supported)
-# Note: Full testing requires muOS environment with rclone installed
+# Note: Full testing requires muOS environment; rclone is pre-installed on MustardOS at /opt/muos/bin/rclone
 # Use verbose mode to see detailed output
 bash -x copy_to_tasks_directory/Cloud_Upload_Saves.sh --dry-run 2>&1 | head -50
 
@@ -94,7 +94,7 @@ file copy_to_tools_directory/*.png
 ### Code Organization
 
 #### Directory Structure
-- `copy_to_tasks_directory/backup/`: Cloud backup scripts (Goose-compatible)
+- `copy_to_tasks_directory/backup/`: Cloud backup scripts (MustardOS-compatible)
 - `copy_to_tools_directory/`: Binary tools and icons
 - `rclone_sample_conf_*/`: Sample configurations
 - Root: Documentation and project files
@@ -156,7 +156,7 @@ file copy_to_tools_directory/*.png
 
 #### Required Tools
 - bash (POSIX compliant shell)
-- rclone (ARMv7 binary for muOS)
+- rclone (ARMv7 binary for muOS — pre-installed on MustardOS at `/opt/muos/bin/rclone`)
 - Standard Unix tools: grep, sed, cp, mkdir
 
 #### Development Tools
@@ -167,13 +167,14 @@ file copy_to_tools_directory/*.png
 ### muOS-Specific Considerations
 
 #### Version Compatibility
-- Target muOS Goose release only
+- Target MustardOS 2601.1 (Funky Jacaranda) release only
 - Tasks live under /opt/muos/share/task
 
 #### Path Conventions
 - Use absolute paths for muOS directories
-- MUOS_ROOT="/mnt/mmc/MUOS"
-- MUOS_USER_DATA="/run/muos/storage"
+- Use GET_VAR "device" "storage/rom/mount" to dynamically resolve MUOS_ROOT
+- Use ${MUOS_STORE_DIR} (set by func.sh) for user data paths
+- Never hardcode /mnt/mmc/MUOS — it may differ by device/storage config
 - Follow muOS directory structure conventions
 
 #### Task Integration

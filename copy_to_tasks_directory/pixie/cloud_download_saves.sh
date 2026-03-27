@@ -17,11 +17,11 @@ echo "$0 $*"
 ##################################################################################
 
 # muOS Goose OS directory paths
-MUOS_ROOT="/mnt/mmc/MUOS"
-MUOS_USER_DATA="/run/muos/storage"
+MUOS_ROOT="$(GET_VAR "device" "storage/rom/mount")/MUOS"
+MUOS_USER_DATA="${MUOS_STORE_DIR}"
 
 # Tool and config paths
-RCLONE_BINARY="${MUOS_ROOT}/tools/rclone"
+RCLONE_BINARY="/opt/muos/bin/rclone"
 RCLONE_CONFIG="${MUOS_ROOT}/tools/rclone.conf"
 
 # Task icon path (Goose OS)

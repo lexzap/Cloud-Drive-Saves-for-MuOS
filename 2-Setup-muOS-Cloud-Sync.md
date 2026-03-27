@@ -4,7 +4,7 @@
 
 ---
 
-This guide will help you set up cloud synchronization on your muOS device (Goose release) using the rclone configuration you created on your computer.
+This guide will help you set up cloud synchronization on your MustardOS 2601.1 (Funky Jacaranda) device using the rclone configuration you created on your computer.
 
 ## 📋 Prerequisites
 
@@ -14,6 +14,8 @@ This guide will help you set up cloud synchronization on your muOS device (Goose
 - ✅ Completed rclone configuration from [Step 1](./1-Setup-Rclone-Configuration.md)
 
 ## 📁 Step 1: Download the ARMv7 rclone Binary
+
+> **Note:** MustardOS 2601.1 (Funky Jacaranda) ships with rclone pre-installed at `/opt/muos/bin/rclone`. If your muOS version has rclone pre-installed, you can skip this step.
 
 1. On your desktop computer, open a web browser and navigate to the rclone downloads page:
    
@@ -35,7 +37,7 @@ This guide will help you set up cloud synchronization on your muOS device (Goose
 
 ## 📂 Step 3: Transfer Files to the SD Card
 
-1. Open the main OS SD card on your computer. It should have a directory named `MUOS` , on your device this typically at `/mnt/mmc/MUOS/`  
+1. Open the main OS SD card on your computer. It should have a directory named `MUOS`, on your device this is typically at your SD card's MUOS directory (paths are dynamically resolved by the scripts)  
 
 ### 📝 Important Note for qty=2 SD card users OS and a ROMs SD card: 
 the files being copied should go into SD slot #1 that has the MUOS operating system.
@@ -44,21 +46,21 @@ the files being copied should go into SD slot #1 that has the MUOS operating sys
    - **Windows/macOS:** Right-click in the MUOS folder → New Folder → Name it `tools`
    - **Linux:** Create the directory if it doesn't exist
 
-3. **Choose your installation path for muOS Goose:**
+3. **Choose your installation path for MustardOS:**
 
 > **Important:** The task directory `/opt/muos/share/task` is on the Linux system partition, not the SD card’s FAT partition. macOS/Windows can’t write to it directly. You must use **SSH/SCP** to copy task scripts and set permissions.
 
 ### 🔧 Required File Transfers:
 
-**For muOS Goose:**
+**For MustardOS (Funky Jacaranda):**
 | Source (from this repository) | Destination on SD Card |
 |-------------------------------|------------------------|
-| `rclone` armv7 32-bit linux binary (downloaded separately) | `MUOS/tools/rclone` |
+| `rclone` armv7 32-bit linux binary (downloaded separately) | `MUOS/tools/rclone` (or use pre-installed `/opt/muos/bin/rclone`) |
 | `rclone.conf` file (from your PC setup) | `MUOS/tools/rclone.conf` |
 | `copy_to_tools_directory/Cloud_Upload_Saves.png` | `MUOS/tools/Cloud_Upload_Saves.png` |
 | `copy_to_tools_directory/Cloud_Download_Saves.png` | `MUOS/tools/Cloud_Download_Saves.png` |
 
-**🦆 For muOS Goose users:**
+**🦆 For MustardOS users:**
 | Source (from this repository) | Destination on SD Card |
 |-------------------------------|------------------------|
 | `copy_to_tasks_directory/backup/cloud_upload_saves.sh` | `/opt/muos/share/task/cloud_upload_saves.sh` |
@@ -88,7 +90,7 @@ ssh root@YOUR_DEVICE_IP \
 > **📝 Important Notes:** 
 > - Copy your `rclone.conf` file that you configured with your cloud service from your PC (Step 1)
 > - The PNG icon files are optional but will provide custom icons for your tasks if your theme supports them
-> - For Goose, copy the scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/` on the device via SSH (this is on the muOS system partition, not the SD card FAT partition)
+> - For MustardOS, copy the scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/` on the device via SSH (this is on the muOS system partition, not the SD card FAT partition)
 > - All files from `copy_to_tools_directory/` go to `MUOS/tools/` on your SD card
 
 ## ⚙️ Step 4: Set Executable Permissions
@@ -102,9 +104,10 @@ If you're using a Unix-based system, ensure the scripts and rclone binary are ex
 3. Run the following commands:
 
 ```bash
+# If you installed rclone manually to tools/:
 chmod +x tools/rclone
 
-# Set permissions for Goose (via SSH):
+# Set permissions for MustardOS (via SSH):
 chmod +x /opt/muos/share/task/cloud_upload_saves.sh
 chmod +x /opt/muos/share/task/cloud_download_saves.sh
 ```
@@ -120,7 +123,7 @@ chmod +x /opt/muos/share/task/cloud_download_saves.sh
 2. **Insert** the SD card back into your Anbernic device
 3. **Power on** the device
 4. **Navigate** to the Tasks menu:
-   - **Goose**: Applications → Task Toolkit → Backup
+   - **MustardOS**: Applications → Task Toolkit
 5. You should see:
     - 📤 **Cloud Upload Saves**
     - 📥 **Cloud Download Saves**
@@ -132,9 +135,9 @@ chmod +x /opt/muos/share/task/cloud_download_saves.sh
 
 > **⏰ Time Sync Critical:** Enable internet time synchronization in muOS settings to ensure proper timestamps on save files. Incorrect timestamps can cause sync conflicts and file versioning issues
 
-> **🔗 Compatibility:** The tasks utilize symlinked paths (`/mnt/mmc/MUOS/`) for compatibility across different storage setups
+> **🔗 Compatibility:** The tasks use dynamic path resolution (`GET_VAR` and `${MUOS_STORE_DIR}`) for compatibility across different storage setups
 
-> **🎯 muOS Version Support:** This setup supports Goose release tasks under `/opt/muos/share/task`
+> **🎯 muOS Version Support:** This setup supports MustardOS 2601.1 (Funky Jacaranda) tasks under `/opt/muos/share/task` — tested and working on Anbernic RG40XX
 
 > **⚙️ Customization:** Customize the scripts as needed to match your specific directory structures or cloud service configurations
 
@@ -148,11 +151,11 @@ For more information on muOS and its features, visit:
 
 ## 🎯 Quick Setup Checklist
 
-- [ ] Downloaded ARMv7 rclone binary from rclone.org
-- [ ] Copied rclone binary to `MUOS/tools/rclone`
+- [ ] Downloaded ARMv7 rclone binary from rclone.org (or skip if MustardOS pre-installed)
+- [ ] Copied rclone binary to `MUOS/tools/rclone` (or use pre-installed `/opt/muos/bin/rclone`)
 - [ ] Copied your rclone.conf (from Step 1) to `MUOS/tools/rclone.conf`
 - [ ] Copied PNG files from `copy_to_tools_directory/` to `MUOS/tools/`
-- [ ] **For Goose**: Copied shell scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/`
+- [ ] Copied shell scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/`
 - [ ] Set executable permissions (Unix systems)
 - [ ] Tested cloud upload/download tasks
 

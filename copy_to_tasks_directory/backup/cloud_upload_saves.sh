@@ -25,11 +25,11 @@ start_logging() {
 }
 
 # muOS Goose OS directory paths
-MUOS_ROOT="/mnt/mmc/MUOS"
-MUOS_USER_DATA="/run/muos/storage"
+MUOS_ROOT="$(GET_VAR "device" "storage/rom/mount")/MUOS"
+MUOS_USER_DATA="${MUOS_STORE_DIR}"
 
 # Tool and config paths
-RCLONE_BINARY="${MUOS_ROOT}/tools/rclone"
+RCLONE_BINARY="/opt/muos/bin/rclone"
 RCLONE_CONFIG="${MUOS_ROOT}/tools/rclone.conf"
 # Source directories (what we're uploading)
 SAVE_DIR="${MUOS_USER_DATA}/save"
@@ -113,7 +113,7 @@ echo "✅ All checks passed! Starting upload..."
 
 ## TODO: fix how to display the info panel in muOS
 # Display an info panel
-#LD_PRELOAD=/mnt/mmc/MUOS/lib/libpadsp.so /mnt/mmc/MUOS/bin/infoPanel -t "Uploading Saves" -m "Your saves are being uploaded to Cloud Drive!" --auto &
+#LD_PRELOAD=${MUOS_ROOT}/lib/libpadsp.so ${MUOS_ROOT}/bin/infoPanel -t "Uploading Saves" -m "Your saves are being uploaded to Cloud Drive!" --auto &
 
 # Synchronize saves (only upload files that are newer locally than cloud)
 echo "📤 Uploading save files (newer local files only)..."

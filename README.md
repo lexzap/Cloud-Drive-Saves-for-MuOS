@@ -1,12 +1,12 @@
 # 📥 muOS Cloud Sync for Retro Handheld Devices
 
-*A cloud drive backup solution for save files and screenshots on muOS Retro Handheld Devices*
+*A cloud drive backup solution for save files and screenshots on muOS (MustardOS) Retro Handheld Devices*
 
 ---
 
 ## 🎮 Overview
 
-This project provides a complete cloud synchronization solution for **muOS retro handheld devices** running the **Goose release**. It allows you to automatically backup and restore your precious save files and screenshots to popular cloud storage services.
+This project provides a complete cloud synchronization solution for **muOS (MustardOS) retro handheld devices** running the **Funky Jacaranda (2601.1)** release. It allows you to automatically backup and restore your precious save files and screenshots to popular cloud storage services.
 
 ### ✨ Key Features
 
@@ -26,7 +26,7 @@ This project is adapted from the excellent work by **hotcereal** for the Miyoo M
 
 ## 🌐 Cloud Service Compatibility
 
-- ✅ **Dropbox** - Fully tested and working
+- ✅ **Dropbox** - Fully tested and working (MustardOS 2601.1 Funky Jacaranda)
 - 🔧 **Google Drive** - Should work (configuration included)
 - 🔧 **OneDrive** - Should work (configuration included)
 - 🔧 **Other rclone-supported services** - May work with proper configuration
@@ -60,7 +60,7 @@ Both upload and download operations use **intelligent timestamp-based comparison
 > **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. These icons are not installed automatically; if you want to use them, you must manually add them to your muOS theme according to your theme's installation instructions.
 
 > **📁 Repository Structure:** This repository is organized with separate directories:
-> - `copy_to_tasks_directory/backup/` - Shell scripts for muOS Goose
+> - `copy_to_tasks_directory/backup/` - Shell scripts for MustardOS (Funky Jacaranda)
 > - `copy_to_tools_directory/` - Contains PNG icons, where you'll also place your rclone binary and config
 > - Sample configuration files for different cloud services are included for reference
 
@@ -71,7 +71,7 @@ Both upload and download operations use **intelligent timestamp-based comparison
 
 ## 📋 Requirements
 
-- muOS (Goose release)
+- MustardOS 2601.1 (Funky Jacaranda) — rclone is pre-installed at `/opt/muos/bin/rclone`
 - Desktop computer for initial setup
 - SD card reader
 - Internet connection on your handheld device
@@ -94,8 +94,7 @@ Follow these step-by-step guides to set up cloud sync. **Complete them in order:
 **[⚙️ muOS Cloud Sync Setup Guide](./2-Setup-muOS-Cloud-Sync.md)**
 
 *Do this after completing Step 1:*
-- Download ARMv7 rclone binary for your handheld device
-- Transfer files to your muOS SD card
+- Transfer files to your MustardOS SD card (rclone is pre-installed on Funky Jacaranda)
 - Install and configure the cloud sync tasks
 - Test the new Tasks in your muOS menu
 
