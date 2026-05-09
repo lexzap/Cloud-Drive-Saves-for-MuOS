@@ -28,8 +28,9 @@ start_logging() {
 MUOS_ROOT="$(GET_VAR "device" "storage/rom/mount")/MUOS"
 MUOS_USER_DATA="${MUOS_STORE_DIR}"
 
-# Tool and config paths
+# Tool and config paths — prefer pre-installed rclone, fall back to tools/
 RCLONE_BINARY="/opt/muos/bin/rclone"
+[ ! -x "${RCLONE_BINARY}" ] && RCLONE_BINARY="${MUOS_ROOT}/tools/rclone"
 RCLONE_CONFIG="${MUOS_ROOT}/tools/rclone.conf"
 # Source directories (what we're uploading)
 SAVE_DIR="${MUOS_USER_DATA}/save"
@@ -68,7 +69,7 @@ start_logging
 echo "Starting cloud upload at $(date +"%Y-%m-%d %H:%M:%S")"
 # Check for rclone binary
 if [ ! -f "${RCLONE_BINARY}" ]; then
-    echo "   Please follow the setup guide to download and install the ARMv7 rclone binary"
+    echo "   rclone should be pre-installed at /opt/muos/bin/rclone on MuOS 2025+"
     fail "rclone binary not found at ${RCLONE_BINARY}"
 fi
 

@@ -13,21 +13,17 @@ This guide will help you set up cloud synchronization on your MustardOS 2601.1 (
 - ✅ Internet connection on your Anbernic device (if required by your cloud service)
 - ✅ Completed rclone configuration from [Step 1](./1-Setup-Rclone-Configuration.md)
 
-## 📁 Step 1: Download the ARMv7 rclone Binary
+## 📁 Step 1: rclone Binary
 
-> **Note:** MustardOS 2601.1 (Funky Jacaranda) ships with rclone pre-installed at `/opt/muos/bin/rclone`. If your muOS version has rclone pre-installed, you can skip this step.
+> **✅ rclone is pre-installed on MuOS 2025 and later** at `/opt/muos/bin/rclone`. No download needed — the scripts use this automatically.
 
-1. On your desktop computer, open a web browser and navigate to the rclone downloads page:
-   
-   🌐 **[https://rclone.org/downloads/](https://rclone.org/downloads/)**
+If you are on an older MuOS version without the pre-installed binary, you can manually place an ARM64 rclone binary at `MUOS/tools/rclone` on the SD card and the scripts will fall back to it:
 
-2. Scroll down to the **"Linux ARM - 32 Bit"** section
+1. Download the **Linux ARM - 64 Bit** binary from **[https://rclone.org/downloads/](https://rclone.org/downloads/)**
+2. Extract and copy the `rclone` executable to `MUOS/tools/rclone` on your SD card
+3. Set permissions via SSH: `chmod +x /path/to/MUOS/tools/rclone`
 
-3. Click on the link to download the latest ARMv7 binary
-   
-   Example: `rclone-v1.69.2-linux-arm-v7.zip`
-
-4. Once downloaded, extract the zip file to obtain the `rclone` executable
+> **⚠️ Architecture note:** These devices (TrimUI Brick, Anbernic RG40XX series) are 64-bit ARM (aarch64). Use the **ARM64** binary, not ARMv7.
 
 ## 💾 Step 2: Insert the OS SD Card (SD1)
 
@@ -153,8 +149,7 @@ For more information on muOS and its features, visit:
 
 ## 🎯 Quick Setup Checklist
 
-- [ ] Downloaded ARMv7 rclone binary from rclone.org (or skip if MustardOS pre-installed)
-- [ ] Copied rclone binary to `MUOS/tools/rclone` (or use pre-installed `/opt/muos/bin/rclone`)
+- [ ] Confirmed rclone is available (pre-installed at `/opt/muos/bin/rclone` on MuOS 2025+, or manually placed ARM64 binary at `MUOS/tools/rclone`)
 - [ ] Copied your rclone.conf (from Step 1) to `MUOS/tools/rclone.conf`
 - [ ] Copied PNG files from `copy_to_tools_directory/` to `MUOS/tools/`
 - [ ] Copied shell scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/Rclone_Tasks/` via SSH
