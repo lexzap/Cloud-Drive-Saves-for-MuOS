@@ -38,8 +38,11 @@ SCREENSHOT_DIR="${MUOS_USER_DATA}/screenshot"
 
 # Cloud storage remote and paths
 CLOUD_REMOTE_NAME=""  # Will be auto-detected from config
-CLOUD_SAVE_PATH="/ambernic/saves"
-CLOUD_SCREENSHOT_PATH="/ambernic/screenshot"
+
+# Cloud folder: uses board name (e.g. rg40xx-h, tui-brick) — each device gets its own folder
+_BOARD="$(GET_VAR "device" "board/name" 2>/dev/null)"
+CLOUD_SAVE_PATH="/${_BOARD}/saves"
+CLOUD_SCREENSHOT_PATH="/${_BOARD}/screenshot"
 
 cleanup() {
     sync
