@@ -39,7 +39,7 @@ SCREENSHOT_DIR="${MUOS_USER_DATA}/screenshot"
 CLOUD_REMOTE_NAME=""  # Will be auto-detected from config
 
 # Cloud folder: uses board name (e.g. rg40xx-h, tui-brick) — each device gets its own folder
-_BOARD="$(GET_VAR "device" "board/name" 2>/dev/null)"
+_BOARD="$(cat /opt/muos/device/config/board/name 2>/dev/null)"
 CLOUD_SAVE_PATH="/${_BOARD}/saves"
 CLOUD_SCREENSHOT_PATH="/${_BOARD}/screenshot"
 
