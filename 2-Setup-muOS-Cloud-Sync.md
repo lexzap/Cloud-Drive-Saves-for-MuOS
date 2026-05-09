@@ -61,28 +61,30 @@ the files being copied should go into SD slot #1 that has the MUOS operating sys
 | `copy_to_tools_directory/Cloud_Download_Saves.png` | `MUOS/tools/Cloud_Download_Saves.png` |
 
 **🦆 For MustardOS users:**
-| Source (from this repository) | Destination on SD Card |
-|-------------------------------|------------------------|
-| `copy_to_tasks_directory/backup/cloud_upload_saves.sh` | `/opt/muos/share/task/cloud_upload_saves.sh` |
-| `copy_to_tasks_directory/backup/cloud_download_saves.sh` | `/opt/muos/share/task/cloud_download_saves.sh` |
+| Source (from this repository) | Destination on device (via SSH) |
+|-------------------------------|----------------------------------|
+| `copy_to_tasks_directory/backup/cloud_upload_saves.sh` | `/opt/muos/share/task/Rclone_Tasks/cloud_upload_saves.sh` |
+| `copy_to_tasks_directory/backup/cloud_download_saves.sh` | `/opt/muos/share/task/Rclone_Tasks/cloud_download_saves.sh` |
+
+> **☁️ Cloud folder auto-detection:** The scripts automatically detect your device's board name (e.g. `rg40xx-h`, `tui-brick`) and use it as the cloud folder — no manual configuration needed. Each device gets its own folder in your cloud storage.
 
 ### 🔐 Copy via SSH/SCP (required for /opt/muos/share/task)
 
-Example (replace host and folder as needed):
+Example (replace `YOUR_DEVICE_IP` with your device's IP address):
 
 ```bash
-# Create a folder (optional)
-ssh root@YOUR_DEVICE_IP 'mkdir -p "/opt/muos/share/task/Rclone Tasks"'
+# Create the Rclone_Tasks folder
+ssh root@YOUR_DEVICE_IP 'mkdir -p /opt/muos/share/task/Rclone_Tasks'
 
 # Copy scripts
 scp copy_to_tasks_directory/backup/cloud_upload_saves.sh \
    copy_to_tasks_directory/backup/cloud_download_saves.sh \
-   root@YOUR_DEVICE_IP:"/opt/muos/share/task/Rclone Tasks/"
+   root@YOUR_DEVICE_IP:/opt/muos/share/task/Rclone_Tasks/
 
 # Set executable permissions
 ssh root@YOUR_DEVICE_IP \
-   'chmod +x "/opt/muos/share/task/Rclone Tasks/cloud_upload_saves.sh" \
-   "/opt/muos/share/task/Rclone Tasks/cloud_download_saves.sh"'
+   'chmod +x /opt/muos/share/task/Rclone_Tasks/cloud_upload_saves.sh \
+   /opt/muos/share/task/Rclone_Tasks/cloud_download_saves.sh'
 ```
 
 > **🔐 SSH Login Note:** Most users connect as `root` and enter the default muOS password (or whatever you changed it to). If you use keys, add `-i ~/.ssh/your_key` to the commands.
@@ -108,13 +110,13 @@ If you're using a Unix-based system, ensure the scripts and rclone binary are ex
 chmod +x tools/rclone
 
 # Set permissions for MustardOS (via SSH):
-chmod +x /opt/muos/share/task/cloud_upload_saves.sh
-chmod +x /opt/muos/share/task/cloud_download_saves.sh
+chmod +x /opt/muos/share/task/Rclone_Tasks/cloud_upload_saves.sh
+chmod +x /opt/muos/share/task/Rclone_Tasks/cloud_download_saves.sh
 ```
 
-> **💡 Tip:** You can also copy the executable permissions for all shell scripts at once:
+> **💡 Tip:** You can also set permissions for all scripts in the folder at once:
 > ```bash
-> chmod +x /opt/muos/share/task/*.sh
+> chmod +x /opt/muos/share/task/Rclone_Tasks/*.sh
 > ```
 
 ## 🔄 Step 5: Reinsert the SD Card and Access Tasks
@@ -137,7 +139,7 @@ chmod +x /opt/muos/share/task/cloud_download_saves.sh
 
 > **🔗 Compatibility:** The tasks use dynamic path resolution (`GET_VAR` and `${MUOS_STORE_DIR}`) for compatibility across different storage setups
 
-> **🎯 muOS Version Support:** This setup supports MustardOS 2601.1 (Funky Jacaranda) tasks under `/opt/muos/share/task` — tested and working on Anbernic RG40XX
+> **🎯 muOS Version Support:** Tested on MustardOS Funky Jacaranda (2026) and Loose Goose (2025) on Anbernic and TrimUI devices. Task scripts go in `/opt/muos/share/task/Rclone_Tasks/` on all supported versions.
 
 > **⚙️ Customization:** Customize the scripts as needed to match your specific directory structures or cloud service configurations
 
@@ -155,7 +157,7 @@ For more information on muOS and its features, visit:
 - [ ] Copied rclone binary to `MUOS/tools/rclone` (or use pre-installed `/opt/muos/bin/rclone`)
 - [ ] Copied your rclone.conf (from Step 1) to `MUOS/tools/rclone.conf`
 - [ ] Copied PNG files from `copy_to_tools_directory/` to `MUOS/tools/`
-- [ ] Copied shell scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/`
+- [ ] Copied shell scripts from `copy_to_tasks_directory/backup/` to `/opt/muos/share/task/Rclone_Tasks/` via SSH
 - [ ] Set executable permissions (Unix systems)
 - [ ] Tested cloud upload/download tasks
 
