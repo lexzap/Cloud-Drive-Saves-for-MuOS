@@ -33,8 +33,9 @@ SCREENSHOT_DIR="${MUOS_USER_DATA}/screenshot"
 
 # Cloud storage remote and paths
 CLOUD_REMOTE_NAME=""  # Will be auto-detected from config
-CLOUD_SAVE_PATH="/ambernic/saves"
-CLOUD_SCREENSHOT_PATH="/ambernic/screenshot"
+_BOARD="$(cat /opt/muos/device/config/board/name 2>/dev/null)"
+CLOUD_SAVE_PATH="/${_BOARD}/saves"
+CLOUD_SCREENSHOT_PATH="/${_BOARD}/screenshot"
 
 ##################################################################################
 # Pre-flight checks
@@ -132,7 +133,36 @@ echo ""
 # Synchronize saves (only upload files that are newer locally than cloud)
 echo "📤 Uploading save files (newer local files only)..."
 echo "   📝 Note: Only files newer than cloud versions will be uploaded"
-${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${SAVE_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" --config="${RCLONE_CONFIG}"
+${RCLONE_BINARY} copy -P -L --no-check-certificate --update \
+    --exclude "saves/**" \
+    --exclude "screenshot/**" \
+    --exclude "podcaster/**" \
+    --exclude "pico8/**" \
+    --exclude "*.mp3" \
+    --exclude "*.MP3" \
+    --exclude "*.m4a" \
+    --exclude "*.M4A" \
+    --exclude "*.aac" \
+    --exclude "*.ogg" \
+    --exclude "*.flac" \
+    --exclude "*.wav" \
+    --exclude "*.mp4" \
+    --exclude "*.MP4" \
+    --exclude "*.mkv" \
+    --exclude "*.MKV" \
+    --exclude "*.avi" \
+    --exclude "*.AVI" \
+    --exclude "*.mov" \
+    --exclude "*.MOV" \
+    --exclude "*.db" \
+    --exclude "*.old" \
+    --exclude "*.bak" \
+    --exclude "*.tmp" \
+    --exclude ".DS_Store" \
+    --exclude "._*" \
+    --exclude ".Spotlight-V100" \
+    --exclude ".fseventsd" \
+    "${SAVE_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" --config="${RCLONE_CONFIG}"
 
 # Synchronize screenshots (only upload files that are newer locally than cloud)
 echo "📸 Uploading screenshots (newer local files only)..."
