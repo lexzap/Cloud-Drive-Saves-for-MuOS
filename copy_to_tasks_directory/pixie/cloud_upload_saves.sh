@@ -107,7 +107,7 @@ fi
 
 # Test cloud service connectivity
 echo "☁️  Testing cloud service connectivity..."
-if ! ${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" > /dev/null 2>&1; then
+if ! ${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" --contimeout 10s --timeout 10s --retries 1 --low-level-retries 1 > /dev/null 2>&1; then
     echo "❌ ERROR: Cannot connect to cloud service (${CLOUD_REMOTE_NAME})"
     echo "   Check your internet connection and rclone configuration"
     echo "   Make sure your device is connected to WiFi"

@@ -58,7 +58,7 @@ CLOUD_REMOTE_NAME=$(grep -E '^\[(onedrive|gdrive|dropbox)\]' "${RCLONE_CONFIG}" 
 echo "   Remote: ${CLOUD_REMOTE_NAME}"
 
 echo "Testing connectivity..."
-${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" > /dev/null 2>&1 \
+${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" --contimeout 10s --timeout 10s --retries 1 --low-level-retries 1 > /dev/null 2>&1 \
     || fail "Cannot reach cloud service"
 
 echo ""
