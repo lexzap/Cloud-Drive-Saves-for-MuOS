@@ -4,7 +4,7 @@
 #
 # OS-agnostic cloud save sync — works on MuOS, Knulli (Batocera), and RockNix.
 # Auto-detects the CFW at runtime and resolves all paths accordingly.
-# Per-device cloud folder isolation: /<device-name>/saves/ and /<device-name>/screenshot/
+# Per-device cloud folder isolation: /<device>-<cfw>/saves/ and /<device>-<cfw>/screenshot/
 
 # ============================================================================
 # OS DETECTION
@@ -82,8 +82,11 @@ setup_environment() {
             ;;
     esac
 
-    CLOUD_SAVE_PATH="/${DEVICE_NAME}/saves"
-    CLOUD_SCREENSHOT_PATH="/${DEVICE_NAME}/screenshot"
+    # Compose cloud folder name as <hardware>-<cfw> — same hardware running
+    # different CFWs (e.g. RG40XXH on MuOS vs Knulli) must not collide.
+    CLOUD_DEVICE="$(printf '%s-%s' "$DEVICE_NAME" "$OS" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')"
+    CLOUD_SAVE_PATH="/${CLOUD_DEVICE}/saves"
+    CLOUD_SCREENSHOT_PATH="/${CLOUD_DEVICE}/screenshot"
 }
 
 # ============================================================================
@@ -159,7 +162,7 @@ frontend_stop
 start_logging
 
 echo "========================================"
-echo "  Cloud Upload — $OS ($DEVICE_NAME)"
+echo "  Cloud Upload — $CLOUD_DEVICE"
 echo "  $(date '+%Y-%m-%d %H:%M:%S')"
 echo "========================================"
 echo ""
