@@ -1,116 +1,139 @@
-# 📥 muOS Cloud Sync for Retro Handheld Devices
+# Cloud Drive Saves for Handhelds
 
-*A cloud drive backup solution for save files and screenshots on muOS Retro Handheld Devices*
-
----
-
-## 🎮 Overview
-
-This project provides a complete cloud synchronization solution for **muOS retro handheld devices** running the **Goose release**. It allows you to automatically backup and restore your precious save files and screenshots to popular cloud storage services.
-
-### ✨ Key Features
-
-- 🔄 **Bidirectional Sync**: Upload saves to cloud and download from cloud
-- 💾 **Save File Backup**: Automatically backs up all game save files
-- 📸 **Screenshot Backup**: Preserves your gaming screenshots
-- 🎯 **Easy Integration**: Adds new tasks directly to muOS Task menu
-- ⚡ **One-Click Operation**: Simple task execution from device menu
-
-## 🙏 Acknowledgments
-
-This project is adapted from the excellent work by **hotcereal** for the Miyoo Mini Plus:
-
-🌟 **Original Project:** [cloud-saves-miyoo-mini-plus](https://github.com/hotcereal/cloud-saves-miyoo-mini-plus)
-
-*Special thanks to hotcereal for creating the foundation that made this muOS adaptation possible!*
-
-## 🌐 Cloud Service Compatibility
-
-- ✅ **Dropbox** - Fully tested and working
-- 🔧 **Google Drive** - Should work (configuration included)
-- 🔧 **OneDrive** - Should work (configuration included)
-- 🔧 **Other rclone-supported services** - May work with proper configuration
-
-> **⚠️ Important Disclaimer:** This software is provided as-is under the MIT License. Users are responsible for their own files and data. **I take no responsibility for any data loss, corruption, or other issues that may arise from using this software.** Always backup your files independently before using any cloud sync solution.
-
-## 🚀 What This Does
-
-When installed, this project adds **two new task scripts** to your muOS device, available in Applications → Task Toolkit → Backup.
-
-1. **📤 Cloud Upload Saves** - Uploads your save files and screenshots to cloud storage
-2. **📥 Cloud Download Saves** - Downloads your save files and screenshots from cloud storage
-
-### 🔄 Smart Synchronization Behavior
-
-Both upload and download operations use **intelligent timestamp-based comparison** to protect your data:
-
-- **📥 Download**: Only downloads files from the cloud that are **newer** than your local versions
-- **📤 Upload**: Only uploads local files that are **newer** than the cloud versions
-- **🛡️ Data Protection**: Prevents accidental overwriting of newer save files with older ones
-- **⚡ Efficiency**: Skips unnecessary transfers, saving time and bandwidth
-
-**Example Scenarios:**
-- Playing on multiple devices? Each device only syncs files that are actually newer
-- Forgot to download before playing? Your recent local progress won't be lost when uploading
-- Forgot to upload before switching devices? Your cloud progress won't be overwritten
-- **Multi-device sync**: If you play on Device A, upload, then play on Device B and download - only newer files from A will be downloaded to B
-
-> **💡 Pro Tip:** This bidirectional protection means you can safely run upload/download operations without worrying about losing recent progress from either location!
-
-> **🎨 Icon Note:** The included PNG files in `copy_to_tools_directory/` are provided for users who wish to embed custom icons into their Theme installation files. These icons are not installed automatically; if you want to use them, you must manually add them to your muOS theme according to your theme's installation instructions.
-
-> **📁 Repository Structure:** This repository is organized with separate directories:
-> - `copy_to_tasks_directory/backup/` - Shell scripts for muOS Goose
-> - `copy_to_tools_directory/` - Contains PNG icons, where you'll also place your rclone binary and config
-> - Sample configuration files for different cloud services are included for reference
-
-### 📁 Directories Synchronized
-
-- `/run/muos/storage/save/` - All game save files
-- `/run/muos/storage/screenshot/` - All screenshots
-
-## 📋 Requirements
-
-- muOS (Goose release)
-- Desktop computer for initial setup
-- SD card reader
-- Internet connection on your handheld device
-- Cloud storage account (Dropbox, Google Drive, OneDrive, etc.)
-
-## 🛠️ Installation Guide
-
-Follow these step-by-step guides to set up cloud sync. **Complete them in order:**
-
-### 🖥️ **Step 1: Configure Rclone on Your Computer**
-**[📝 Setup Rclone Configuration Guide](./1-Setup-Rclone-Configuration.md)**
-
-*Do this first on your desktop/laptop computer:*
-- Install and configure rclone using your web browser
-- Set up authentication for your cloud service (Dropbox, Google Drive, OneDrive)
-- Generate the `rclone.conf` configuration file
-- **Required before proceeding to Step 2**
-
-### 📱 **Step 2: Install Cloud Sync on Your Handheld**
-**[⚙️ muOS Cloud Sync Setup Guide](./2-Setup-muOS-Cloud-Sync.md)**
-
-*Do this after completing Step 1:*
-- Download ARMv7 rclone binary for your handheld device
-- Transfer files to your muOS SD card
-- Install and configure the cloud sync tasks
-- Test the new Tasks in your muOS menu
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE) file for details.
-
-## ⚠️ Disclaimer
-
-**USE AT YOUR OWN RISK**: This software is experimental and provided without warranty. Always maintain independent backups of your important save files and data. The author assumes no responsibility for any data loss, device issues, or other problems that may result from using this software.
-
-## 🤝 Contributing
-
-Found an issue or want to improve the project? Feel free to open an issue or submit a pull request!
+*OS-agnostic cloud sync for save files and screenshots on retro handheld devices*
 
 ---
 
-*Happy gaming and safe saving! 🎮✨* 
+## Overview
+
+Universal cloud synchronization for save files and screenshots across multiple
+Linux CFWs (custom firmwares) for retro handheld devices. One set of scripts,
+auto-detecting your CFW at runtime — no per-device forks.
+
+### Supported CFWs
+
+| CFW | Device | rclone | Saves path | Cloud folder |
+|-----|--------|--------|------------|--------------|
+| **MuOS** (Funky Jacaranda) | TrimUI Brick, Anbernic RG40XXH, etc. | Pre-installed | `/run/muos/storage/save` | `/<board-name>/saves` |
+| **Knulli** (Batocera 42) | Anbernic RG40XXH Scarab | Auto-installed | `/userdata/saves` | `/<device-name>/saves` |
+| **RockNix** | MiniLoong Pocket 1, etc. | Pre-installed | `/storage/roms/savestates` | `/<hostname>/saves` |
+
+### Key Features
+
+- **One script, all OSes** — auto-detects MuOS / Knulli / RockNix at runtime
+- **Per-device cloud isolation** — each device syncs to its own cloud folder
+- **Smart timestamp sync** — `--update` flag only transfers newer files (bidirectional-safe)
+- **macOS junk filtering** — excludes `._*`, `.DS_Store`, `__MACOSX`, media files
+- **RockNix dual-dir support** — syncs both `savestates/` and `savefiles/` separately
+- **Dropbox / Google Drive / OneDrive** — any rclone-supported provider
+
+## Repository Structure
+
+```
+scripts/                          Universal scripts (work on ALL CFWs)
+  cloud_upload_saves.sh           Upload saves + screenshots to cloud
+  cloud_download_saves.sh         Download saves + screenshots from cloud
+
+platforms/                        Per-OS install scripts
+  muos/install.sh                 Deploys to /mnt/mmc/MUOS/tasks/ + Tools/
+  knulli/install.sh               Installs rclone + scripts to /userdata/system/
+  rocknix/install.sh              Deploys to /storage/.config/modules/
+
+copy_to_tasks_directory/          Legacy MuOS-only scripts (backup/pixie formats)
+copy_to_tools_directory/          PNG icons for MuOS task menu
+rclone_sample_conf_for_dropbox/   Sample rclone config — Dropbox
+rclone_sample_conf_for_gdrive/    Sample rclone config — Google Drive
+rclone_sample_conf_for_onedrive/  Sample rclone config — OneDrive
+```
+
+## Quick Start
+
+### Step 1: Configure rclone on your computer
+
+See **[Setup Rclone Configuration](./1-Setup-Rclone-Configuration.md)** — generate an
+`rclone.conf` with your cloud provider credentials (Dropbox, Google Drive, or OneDrive).
+
+### Step 2: Install on your device
+
+#### MuOS (Brick, RG40XXH, etc.)
+```bash
+# Push scripts + installer to device, then run
+scp -r scripts/ platforms/muos/ root@DEVICE_IP:/tmp/
+ssh root@DEVICE_IP 'sh /tmp/muos/install.sh'
+```
+
+#### Knulli / Batocera (RG40XXH)
+```bash
+# Installer auto-downloads rclone arm64 and deploys everything
+scp -r scripts/ platforms/knulli/ rclone.conf root@DEVICE_IP:/tmp/
+ssh root@DEVICE_IP 'sh /tmp/knulli/install.sh'
+```
+
+#### RockNix (MiniLoong Pocket 1)
+```bash
+# rclone already pre-installed — just push scripts
+scp -r scripts/ platforms/rocknix/ root@DEVICE_IP:/tmp/
+ssh root@DEVICE_IP 'sh /tmp/rocknix/install.sh'
+```
+
+### Step 3: Run cloud sync
+
+```bash
+# Upload saves to cloud (run after playing)
+cloud_upload_saves.sh
+
+# Download saves from cloud (run before playing on a different device)
+cloud_download_saves.sh
+```
+
+On MuOS these appear in: **Applications -> Task Toolkit -> Backup**
+
+## How Sync Works
+
+Both operations use `rclone copy --update` which only transfers files that are
+**newer** than the destination — this makes upload and download bidirectionally safe:
+
+- **Upload:** only pushes local saves newer than the cloud versions
+- **Download:** only pulls cloud saves newer than your local versions
+- **Multi-device:** play on Device A, upload; play on Device B, download — only newer saves transfer
+
+Each device syncs to its own cloud folder (`/<device-name>/saves/`), preventing
+cross-device timestamp collisions. Saves from different devices never overwrite
+each other — each device's cloud folder is independent.
+
+## Cloud Folder Naming
+
+| CFW | Source | Example |
+|-----|--------|---------|
+| MuOS | `/opt/muos/device/config/board/name` | `tui-brick`, `rg40xx-h` |
+| Knulli | `/userdata/system/configs/cloud-sync.conf` | `rg40xx-h` (editable) |
+| RockNix | `hostname` | `pocket1` |
+
+To change the Knulli device name, edit:
+```
+/userdata/system/configs/cloud-sync.conf
+```
+
+## Excludes
+
+The following are always excluded from sync (inlined in scripts per busybox
+word-splitting safety):
+
+- Legacy duplicate dirs (`saves/`, `screenshot/`, `podcaster/`, `pico8/`)
+- Media files (mp3, m4a, ogg, flac, wav, mp4, mkv, avi, mov)
+- Database/temp files (.db, .old, .bak, .tmp)
+- macOS junk (.DS_Store, ._\*, .Spotlight-V100, .fseventsd)
+
+## Cloud Drive Rules
+
+Cloud drives are **SAVE/STATE data only** — never ROMs, BIOS, installers, or media.
+ROMs come from local shares/SD cards, not cloud.
+
+## Acknowledgments
+
+Adapted from **hotcereal**'s [cloud-saves-miyoo-mini-plus](https://github.com/hotcereal/cloud-saves-miyoo-mini-plus)
+for the Miyoo Mini Plus, originally ported to MuOS, then generalized for all CFWs.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

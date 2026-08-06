@@ -17,11 +17,11 @@ echo "$0 $*"
 ##################################################################################
 
 # muOS Goose OS directory paths
-MUOS_ROOT="/mnt/mmc/MUOS"
-MUOS_USER_DATA="/run/muos/storage"
+MUOS_ROOT="$(GET_VAR "device" "storage/rom/mount")/MUOS"
+MUOS_USER_DATA="${MUOS_STORE_DIR}"
 
 # Tool and config paths
-RCLONE_BINARY="${MUOS_ROOT}/tools/rclone"
+RCLONE_BINARY="/opt/muos/bin/rclone"
 RCLONE_CONFIG="${MUOS_ROOT}/tools/rclone.conf"
 
 # Task icon path (Goose OS)
@@ -33,8 +33,9 @@ SCREENSHOT_DIR="${MUOS_USER_DATA}/screenshot"
 
 # Cloud storage remote and paths
 CLOUD_REMOTE_NAME=""  # Will be auto-detected from config
-CLOUD_SAVE_PATH="/ambernic/saves"
-CLOUD_SCREENSHOT_PATH="/ambernic/screenshot"
+_BOARD="$(cat /opt/muos/device/config/board/name 2>/dev/null)"
+CLOUD_SAVE_PATH="/${_BOARD}/saves"
+CLOUD_SCREENSHOT_PATH="/${_BOARD}/screenshot"
 
 ##################################################################################
 # Pre-flight checks
@@ -106,7 +107,7 @@ fi
 
 # Test cloud service connectivity
 echo "☁️  Testing cloud service connectivity..."
-if ! ${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" > /dev/null 2>&1; then
+if ! ${RCLONE_BINARY} lsd ${CLOUD_REMOTE_NAME}: --config="${RCLONE_CONFIG}" --contimeout 10s --timeout 10s --retries 1 --low-level-retries 1 > /dev/null 2>&1; then
     echo "❌ ERROR: Cannot connect to cloud service (${CLOUD_REMOTE_NAME})"
     echo "   Check your internet connection and rclone configuration"
     echo "   Make sure your device is connected to WiFi"
@@ -127,12 +128,41 @@ echo ""
 
 ## TODO: fix how to display the info panel in muOS
 # Display an info panel 
-#LD_PRELOAD=/mnt/mmc/MUOS/lib/libpadsp.so /mnt/mmc/MUOS/bin/infoPanel -t "Uploading Saves" -m "Your saves are being uploaded to Cloud Drive!" --auto &
+#LD_PRELOAD=${MUOS_ROOT}/lib/libpadsp.so ${MUOS_ROOT}/bin/infoPanel -t "Uploading Saves" -m "Your saves are being uploaded to Cloud Drive!" --auto &
 
 # Synchronize saves (only upload files that are newer locally than cloud)
 echo "📤 Uploading save files (newer local files only)..."
 echo "   📝 Note: Only files newer than cloud versions will be uploaded"
-${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${SAVE_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" --config="${RCLONE_CONFIG}"
+${RCLONE_BINARY} copy -P -L --no-check-certificate --update \
+    --exclude "saves/**" \
+    --exclude "screenshot/**" \
+    --exclude "podcaster/**" \
+    --exclude "pico8/**" \
+    --exclude "*.mp3" \
+    --exclude "*.MP3" \
+    --exclude "*.m4a" \
+    --exclude "*.M4A" \
+    --exclude "*.aac" \
+    --exclude "*.ogg" \
+    --exclude "*.flac" \
+    --exclude "*.wav" \
+    --exclude "*.mp4" \
+    --exclude "*.MP4" \
+    --exclude "*.mkv" \
+    --exclude "*.MKV" \
+    --exclude "*.avi" \
+    --exclude "*.AVI" \
+    --exclude "*.mov" \
+    --exclude "*.MOV" \
+    --exclude "*.db" \
+    --exclude "*.old" \
+    --exclude "*.bak" \
+    --exclude "*.tmp" \
+    --exclude ".DS_Store" \
+    --exclude "._*" \
+    --exclude ".Spotlight-V100" \
+    --exclude ".fseventsd" \
+    "${SAVE_DIR}/" "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" --config="${RCLONE_CONFIG}"
 
 # Synchronize screenshots (only upload files that are newer locally than cloud)
 echo "📸 Uploading screenshots (newer local files only)..."

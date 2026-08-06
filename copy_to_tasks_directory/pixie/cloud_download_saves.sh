@@ -17,11 +17,11 @@ echo "$0 $*"
 ##################################################################################
 
 # muOS Goose OS directory paths
-MUOS_ROOT="/mnt/mmc/MUOS"
-MUOS_USER_DATA="/run/muos/storage"
+MUOS_ROOT="$(GET_VAR "device" "storage/rom/mount")/MUOS"
+MUOS_USER_DATA="${MUOS_STORE_DIR}"
 
 # Tool and config paths
-RCLONE_BINARY="${MUOS_ROOT}/tools/rclone"
+RCLONE_BINARY="/opt/muos/bin/rclone"
 RCLONE_CONFIG="${MUOS_ROOT}/tools/rclone.conf"
 
 # Task icon path (Goose OS)
@@ -33,8 +33,9 @@ SCREENSHOT_DIR="${MUOS_USER_DATA}/screenshot"
 
 # Cloud storage remote and paths
 CLOUD_REMOTE_NAME=""  # Will be auto-detected from config
-CLOUD_SAVE_PATH="/ambernic/saves"
-CLOUD_SCREENSHOT_PATH="/ambernic/screenshot"
+_BOARD="$(cat /opt/muos/device/config/board/name 2>/dev/null)"
+CLOUD_SAVE_PATH="/${_BOARD}/saves"
+CLOUD_SCREENSHOT_PATH="/${_BOARD}/screenshot"
 
 ##################################################################################
 # Pre-flight checks
@@ -132,7 +133,36 @@ echo ""
 # Synchronize saves (only download files that are newer on cloud than local)
 echo "📥 Downloading save files (newer cloud files only)..."
 echo "   📝 Note: Only files newer than local versions will be downloaded"
-${RCLONE_BINARY} copy -P -L --no-check-certificate --update "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" "${SAVE_DIR}/" --config="${RCLONE_CONFIG}"
+${RCLONE_BINARY} copy -P -L --no-check-certificate --update \
+    --exclude "saves/**" \
+    --exclude "screenshot/**" \
+    --exclude "podcaster/**" \
+    --exclude "pico8/**" \
+    --exclude "*.mp3" \
+    --exclude "*.MP3" \
+    --exclude "*.m4a" \
+    --exclude "*.M4A" \
+    --exclude "*.aac" \
+    --exclude "*.ogg" \
+    --exclude "*.flac" \
+    --exclude "*.wav" \
+    --exclude "*.mp4" \
+    --exclude "*.MP4" \
+    --exclude "*.mkv" \
+    --exclude "*.MKV" \
+    --exclude "*.avi" \
+    --exclude "*.AVI" \
+    --exclude "*.mov" \
+    --exclude "*.MOV" \
+    --exclude "*.db" \
+    --exclude "*.old" \
+    --exclude "*.bak" \
+    --exclude "*.tmp" \
+    --exclude ".DS_Store" \
+    --exclude "._*" \
+    --exclude ".Spotlight-V100" \
+    --exclude ".fseventsd" \
+    "${CLOUD_REMOTE_NAME}:${CLOUD_SAVE_PATH}/" "${SAVE_DIR}/" --config="${RCLONE_CONFIG}"
 
 # Synchronize screenshots (only download files that are newer on cloud than local)
 echo "📸 Downloading screenshots (newer cloud files only)..."
